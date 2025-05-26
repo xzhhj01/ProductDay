@@ -72,10 +72,11 @@ yarn dev
 ```
 
 ## 🌐 API 요청 방법 가이드
+![image](https://github.com/user-attachments/assets/5996d95b-bc7a-4cd1-af13-7af033c935ad)
 
 ### 기본 API 설정
 
-#### 1. HTTP 유틸리티 함수 (`src/utils/http/`)
+#### 1. ui 페이지
 
 **`page.js`** - 예시 페이지 함수:
 ```javascript
