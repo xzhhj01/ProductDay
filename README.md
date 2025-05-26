@@ -204,58 +204,6 @@ className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transit
 ```
 
 
-## 🐛 디버깅 및 개발 팁
-
-### 1. 개발자 도구 활용
-- **Console**: `console.log()`, `console.error()` 활용
-- **Network**: API 요청/응답 확인
-- **Application**: 로컬 스토리지, 쿠키 확인
-
-### 2. 에러 경계 컴포넌트
-```javascript
-// components/ErrorBoundary.js
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <h1>문제가 발생했습니다.</h1>;
-    }
-
-    return this.props.children;
-  }
-}
-```
-
-### 3. 성능 최적화
-```javascript
-// 이미지 최적화 (Next.js)
-import Image from 'next/image';
-
-<Image
-  src="/assets/img/icon.png"
-  alt="아이콘"
-  width={100}
-  height={100}
-  priority // 중요한 이미지는 우선 로딩
-/>
-
-// 컴포넌트 메모이제이션
-import { memo } from 'react';
-
-const MemoizedComponent = memo(function MyComponent({ data }) {
-  return <div>{data}</div>;
-});
-```
-
-
 ## 💡 마지막 팁
 
 1. **작은 단위로 개발**: 기능별로 나누어 개발하고 테스트
