@@ -1,22 +1,38 @@
-export default function Community() {
+'use client';
+
+import { useEffect, useState } from "react";
+import { getPosts } from "@/app/services/community/community.service"; 
+
+export default function CommunityPost() {
+    const [post, setPost] = useState(null);
+
+    useEffect(() => {
+        async function fetchPost() {
+            try {
+                const result = await getPosts("title1"); // 고정된 title 사용, 필요 시 동적 처리 가능
+                if (result.isSuccess && result.data) {
+                    setPost(result.data);
+                }
+            } catch (error) {
+                console.error("게시글 불러오기 실패:", error);
+            }
+        }
+
+        fetchPost();
+    }, []);
+
     return (
-        <div className="min-h-screen p-8">
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold mb-8">커뮤니티</h1>
-                <div className="space-y-4">
-                    {/* 임시 게시물 데이터 */}
-                    <div className="p-4 bg-white rounded-lg shadow">
-                        <h3 className="text-xl font-semibold">정글링 팁 공유</h3>
-                        <p className="text-gray-600 mt-2">시즌14 정글링 루트와 팁을 공유합니다...</p>
-                        <div className="mt-2 text-sm text-gray-500">작성자: 정글러 • 조회수: 128</div>
-                    </div>
-                    <div className="p-4 bg-white rounded-lg shadow">
-                        <h3 className="text-xl font-semibold">미드 챔피언 추천</h3>
-                        <p className="text-gray-600 mt-2">현재 메타에서 좋은 미드 챔피언 추천드립니다...</p>
-                        <div className="mt-2 text-sm text-gray-500">작성자: 미드장인 • 조회수: 256</div>
-                    </div>
+        <div className="min-h-screen p-6 max-w-xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4">게시글 조회</h1>
+            {post ? (
+                <div className="bg-white p-4 rounded shadow">
+                    <h2 className="text-xl font-semibold">{post.title}</h2>
+                    <p className="mt-2 text-gray-700">{post.content}</p>
+                    <div className="mt-2 text-sm text-gray-500">ID: {post.id}</div>
                 </div>
-            </div>
+            ) : (
+                <p className="text-gray-500">게시글을 불러오는 중입니다...</p>
+            )}
         </div>
     );
-} 
+}
