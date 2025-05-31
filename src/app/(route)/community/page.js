@@ -1,166 +1,18 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { requireAuth } from '@/app/utils/auth-check';
 import { useRouter } from 'next/navigation';
 import LoginModal from '@/app/components/LoginModal';
+import { communityService } from '@/app/services/community/community.service';
+import { allChampions,allAgents,allLolMaps,allValorantMaps,tierMap } from '@/app/utils/gamedata/data';
+import { timeAgo } from '@/app/utils/timeAgo';
 
 export default function CommunityPage() {
     const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [posts] = useState([
-        {
-            id: 1,
-            title: "바론 스틸 vs 팀파이트 선택 상황",
-            content: "바론을 치고 있는데 상대팀이 오는 상황에서 어떤 선택이 맞을까요?",
-            author: "정글러123",
-            tier: "골드 2",
-            votes: { a: 45, b: 23 },
-            tags: ["바론", "팀파이트", "정글"],
-            situation: "오브젝트",
-            map: "소환사의 협곡",
-            game: "리그 오브 레전드",
-            champions: ["리신", "그레이브즈"],
-            createdAt: "2시간 전",
-            comments: 12
-        },
-        {
-            id: 2,
-            title: "탑 라인전 갱킹 타이밍 판정",
-            content: "상대방이 푸시하고 있을 때 갱킹을 요청했는데 안 와줬어요. 누구 잘못인가요?",
-            author: "탑솔러456",
-            tier: "플래티넘 4",
-            votes: { a: 67, b: 34 },
-            tags: ["탑", "갱킹", "라인전"],
-            situation: "라인전",
-            map: "소환사의 협곡",
-            game: "리그 오브 레전드",
-            champions: ["가렌", "다리우스"],
-            createdAt: "4시간 전",
-            comments: 8
-        },
-        {
-            id: 3,
-            title: "서포터 로밍 vs 원딜 보호",
-            content: "미드에 갱킹 기회가 있는데 원딜이 혼자 남는 상황입니다.",
-            author: "서포터789",
-            tier: "다이아몬드 3",
-            votes: { a: 89, b: 12 },
-            tags: ["서포터", "로밍", "원딜"],
-            situation: "로밍",
-            map: "소환사의 협곡",
-            game: "리그 오브 레전드",
-            champions: ["쓰레쉬", "노틸러스"],
-            createdAt: "6시간 전",
-            comments: 15
-        },
-        {
-            id: 4,
-            title: "칼바람 나락 시작 아이템 선택",
-            content: "AP 챔피언으로 시작할 때 잃은 챕터 vs 도란링 어떤게 좋나요?",
-            author: "칼바람장인",
-            tier: "실버 1",
-            votes: { a: 34, b: 56 },
-            tags: ["아이템", "시작템", "AP"],
-            situation: "아이템빌드",
-            map: "칼바람 나락",
-            game: "리그 오브 레전드",
-            champions: ["럭스", "제라스"],
-            createdAt: "8시간 전",
-            comments: 20
-        },
-        {
-            id: 5,
-            title: "베이븐 에코 로테이션 어디로?",
-            content: "B 사이트 베이븐에서 2명이 들어오는데 에코 어디로 가야 하나요?",
-            author: "발로란트유저99",
-            tier: "골드 3",
-            votes: { a: 56, b: 32 },
-            tags: ["베이븐", "로테이션", "수비"],
-            situation: "사이트 방어",
-            map: "베이븐",
-            game: "발로란트",
-            agents: ["오멘", "제트"],
-            createdAt: "5시간 전",
-            comments: 9
-        },
-        {
-            id: 6,
-            title: "스플릿 A사이트 리테이크 진입 타이밍",
-            content: "A 사이트를 뺏겼을 때 스모크 없이 진입해야 할까요?",
-            author: "레이디언트123",
-            tier: "다이아몬드 2",
-            votes: { a: 78, b: 43 },
-            tags: ["스플릿", "리테이크", "A사이트"],
-            situation: "리테이크",
-            map: "스플릿",
-            game: "발로란트",
-            agents: ["브림스톤", "페이드"],
-            createdAt: "1시간 전",
-            comments: 18
-        },
-        {
-            id: 7,
-            title: "어센트 B메인 연막 타이밍 판정",
-            content: "러쉬할 때 오멘 연막을 먼저 깔고 가야 하나요, 아니면 진입하면서 깔아야 하나요?",
-            author: "불멸3유저",
-            tier: "불멸 3",
-            votes: { a: 92, b: 31 },
-            tags: ["어센트", "연막", "러쉬"],
-            situation: "사이트 진입",
-            map: "어센트",
-            game: "발로란트",
-            agents: ["오멘", "레이나"],
-            createdAt: "3시간 전",
-            comments: 24
-        },
-        {
-            id: 8,
-            title: "헤이븐 가라지 수비 로테이션",
-            content: "C 사이트에서 가라지 소리 들렸을 때 바로 로테해야 하나요?",
-            author: "플래3수비전문",
-            tier: "플래티넘 3",
-            votes: { a: 45, b: 67 },
-            tags: ["헤이븐", "로테이션", "수비"],
-            situation: "사이트 방어",
-            map: "헤이븐",
-            game: "발로란트",
-            agents: ["사이퍼", "소바"],
-            createdAt: "2시간 전",
-            comments: 15
-        },
-        {
-            id: 9,
-            title: "바인드 A숏 홀드 각도 선택",
-            content: "A숏 홀드할 때 화장실 앞에서 보는게 나은가요 아니면 램프에서 보는게 나은가요?",
-            author: "실버탈출희망",
-            tier: "실버 2",
-            votes: { a: 34, b: 89 },
-            tags: ["바인드", "홀드", "수비"],
-            situation: "사이트 방어",
-            map: "바인드",
-            game: "발로란트",
-            agents: ["킬조이", "세이지"],
-            createdAt: "7시간 전",
-            comments: 31
-        },
-        {
-            id: 10,
-            title: "아이스박스 B사이트 얼티 사용 타이밍",
-            content: "제트 얼티 쓸 때 연막 먼저 까는게 좋나요 아니면 바로 날아가는게 좋나요?",
-            author: "제트원트릭",
-            tier: "골드 1",
-            votes: { a: 56, b: 72 },
-            tags: ["아이스박스", "얼티메이트", "제트"],
-            situation: "얼티메이트",
-            map: "아이스박스",
-            game: "발로란트",
-            agents: ["제트", "레이즈"],
-            createdAt: "4시간 전",
-            comments: 19
-        }
-    ]);
+    const [posts, setPosts] = useState([]);
 
     const [selectedGame, setSelectedGame] = useState('');
     const [activeFilters, setActiveFilters] = useState({
@@ -176,34 +28,13 @@ export default function CommunityPage() {
     const [showAllAgents, setShowAllAgents] = useState(false);
     
     // All champions and agents data
-    const allChampions = [
-        '가렌', '갈리오', '갱플랭크', '그라가스', '그레이브즈', '그웬', '나르', '나미', '나서스', '노틸러스',
-        '녹턴', '누누와 윌럼프', '니달리', '니코', '닐라', '다리우스', '다이애나', '드레이븐', '라이즈', '라칸',
-        '람머스', '럭스', '럼블', '레나타 글라스크', '레넥톤', '레오나', '렉사이', '렐', '렝가', '루시안',
-        '룰루', '르블랑', '리 신', '리븐', '리산드라', '릴리아', '마스터 이', '마오카이', '말자하', '말파이트',
-        '모데카이저', '모르가나', '문도 박사', '미스 포츈', '밀리오', '바드', '바루스', '바이', '베이가', '베인',
-        '벡스', '벨베스', '벨코즈', '볼리베어', '브라움', '브랜드', '브라이어', '블라디미르', '블리츠크랭크', '빅토르',
-        '뽀삐', '사미라', '사이온', '사일러스', '샤코', '세나', '세라핀', '세주아니', '세트', '소나',
-        '소라카', '쉔', '쉬바나', '스웨인', '스카너', '시비르', '신 짜오', '신드라', '신지드', '쓰레쉬',
-        '아리', '아무무', '아우렐리온 솔', '아이번', '아지르', '아칼리', '아크샨', '아트록스', '아펠리오스', '알리스타',
-        '애니', '애니비아', '애쉬', '야스오', '에코', '엘리스', '오공', '오른', '오리아나', '올라프',
-        '요네', '요릭', '우디르', '우르곳', '워윅', '유미', '이렐리아', '이블린', '이즈리얼', '일라오이',
-        '자르반 4세', '자야', '자이라', '자크', '잔나', '잭스', '제드', '제라스', '제리', '제이스',
-        '조이', '직스', '진', '질리언', '징크스', '초가스', '카르마', '카밀', '카사딘', '카서스',
-        '카시오페아', '카이사', '카직스', '카타리나', '칼리스타', '케넨', '케이틀린', '케인', '케일', '코그모',
-        '코르키', '퀸', '크산테', '클레드', '키아나', '킨드레드', '타릭', '탈론', '탈리야', '탐 켄치',
-        '트런들', '트리스타나', '트린다미어', '트위스티드 페이트', '트위치', '티모', '파이크', '판테온', '피들스틱', '피오라',
-        '피즈', '하이머딩거', '헤카림', '흐웨이']
-    .sort();
-    
-    const allAgents = [
-        '게코', '네온', '데드락', '레이나', '레이즈', '멘', '바이퍼', '브리치', '브림스톤',
-        '세이지', '소바', '스카이', '아스트라', '아이소', '오멘', '요루', '제트', '체임버',
-        '케이오', '킬조이', '페이드', '페닉스', '하버'
-    ].sort();
-    
-    const allLolMaps = ['소환사의 협곡', '칼바람 나락', '협곡 나락', '전략적 팀 전투'];
-    const allValorantMaps = ['어센트', '바인드', '헤이븐', '스플릿', '아이스박스', '브리즈', '프랙처', '펄', '로터스', '선셋', '베이븐'];
+
+   // Load posts from API
+    useEffect(() => {
+        communityService.getPosts()
+            .then(data => setPosts(data))
+            .catch(err => console.error('Failed to load posts', err));
+    }, []);
 
     // Extract unique values for filters based on selected game
     const filterOptions = useMemo(() => {
@@ -283,19 +114,6 @@ export default function CommunityPage() {
 
     const getTierClass = (tier) => {
         const tierName = tier.split(' ')[0].toLowerCase();
-        const tierMap = {
-            '아이언': 'tier-iron',
-            '브론즈': 'tier-bronze',
-            '실버': 'tier-silver',
-            '골드': 'tier-gold',
-            '플래티넘': 'tier-platinum',
-            '다이아몬드': 'tier-diamond',
-            '마스터': 'tier-master',
-            '그랜드마스터': 'tier-grandmaster',
-            '챌린저': 'tier-challenger',
-            '불멸': 'tier-불멸',
-            '레이디언트': 'tier-레이디언트'
-        };
         return tierMap[tierName] || 'tier-badge bg-gray-500 text-white';
     };
 
@@ -592,7 +410,7 @@ export default function CommunityPage() {
                                                 backgroundColor: 'var(--neutral-100)',
                                                 color: 'var(--text-secondary)' 
                                             }}>
-                                                {post.createdAt}
+                                                {timeAgo(post.createdAt)}
                                             </span>
                                         </div>
                                         
