@@ -1,0 +1,500 @@
+.header {
+    background-color: var(--surface);
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.valorantHeader {
+    background: linear-gradient(135deg, #ff4655 0%, #0f1419 100%);
+    box-shadow: var(--shadow-lg);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg) 0;
+}
+
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xl);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.valorantLogo {
+    color: white;
+}
+
+.logoIcon {
+    font-size: 24px;
+}
+
+.gameSelector {
+    position: relative;
+}
+
+.currentGame {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    font-weight: 500;
+}
+
+.valorantCurrentGame {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.currentGame:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.1);
+}
+
+.valorantCurrentGame:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.gameIcon {
+    font-size: 16px;
+}
+
+.dropdownArrow {
+    font-size: 12px;
+    transition: transform var(--transition-normal);
+}
+
+.dropdownArrowOpen {
+    transform: rotate(180deg);
+}
+
+.gameDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.gameOption {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-weight: 500;
+}
+
+.gameOption:hover {
+    background: var(--neutral-50);
+}
+
+.gameOptionActive {
+    background: var(--accent);
+    color: white;
+}
+
+.valorantGameOptionActive {
+    background: #ff4655;
+    color: white;
+}
+
+.mobileGameToggle {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border: 1px solid var(--neutral-300);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.valorantMobileGameToggle {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.toggleSwitch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+    background: var(--neutral-300);
+    border-radius: 10px;
+    transition: all var(--transition-normal);
+}
+
+.valorantToggleSwitch {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.toggleSwitchActive {
+    background: var(--accent);
+}
+
+.valorantToggleSwitchActive {
+    background: white;
+}
+
+.toggleHandle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: all var(--transition-normal);
+}
+
+.valorantToggleHandle {
+    background: #ff4655;
+}
+
+.toggleHandleActive {
+    transform: translateX(20px);
+}
+
+.valorantToggleHandleActive {
+    background: #ff4655;
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.navLink {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.valorantNavLink {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.navLink:hover {
+    color: var(--text-primary);
+    background: var(--neutral-100);
+}
+
+.valorantNavLink:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.navLinkActive {
+    color: var(--accent);
+    background: rgba(30, 136, 229, 0.1);
+}
+
+.valorantNavLinkActive {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.navIcon {
+    font-size: 16px;
+}
+
+.rightSection {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.authButtons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.loginButton {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.valorantLoginButton {
+    border: 1px solid white;
+    color: white;
+}
+
+.loginButton:hover {
+    background: var(--accent);
+    color: white;
+}
+
+.valorantLoginButton:hover {
+    background: white;
+    color: #ff4655;
+}
+
+.signupButton {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.valorantSignupButton {
+    background: white;
+    color: #ff4655;
+}
+
+.signupButton:hover {
+    background: #1976d2;
+}
+
+.valorantSignupButton:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.userMenu {
+    position: relative;
+}
+
+.userButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+}
+
+.userButton:hover {
+    background: var(--neutral-100);
+}
+
+.valorantUserButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.valorantUserAvatar {
+    background: white;
+    color: #ff4655;
+}
+
+.userDropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    min-width: 200px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.userDropdownItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    color: var(--text-primary);
+}
+
+.userDropdownItem:hover {
+    background: var(--neutral-50);
+}
+
+.userDropdownDivider {
+    height: 1px;
+    background: var(--neutral-200);
+    margin: var(--spacing-xs) 0;
+}
+
+.mobileMenuButton {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+    color: var(--text-primary);
+}
+
+.valorantMobileMenuButton {
+    color: white;
+}
+
+.mobileMenuButton:hover {
+    background: var(--neutral-100);
+}
+
+.valorantMobileMenuButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mobileMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--neutral-200);
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+}
+
+.valorantMobileMenu {
+    background: #0f1419;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobileNavigation {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-md);
+}
+
+.mobileNavLink {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.valorantMobileNavLink {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.mobileNavLink:hover {
+    color: var(--text-primary);
+    background: var(--neutral-100);
+}
+
+.valorantMobileNavLink:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mobileNavLinkActive {
+    color: var(--accent);
+    background: rgba(30, 136, 229, 0.1);
+}
+
+.valorantMobileNavLinkActive {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.mobileAuthButtons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--neutral-200);
+}
+
+.valorantMobileAuthButtons {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .navigation {
+        display: none;
+    }
+
+    .authButtons {
+        display: none;
+    }
+
+    .mobileMenuButton {
+        display: block;
+    }
+
+    .mobileGameToggle {
+        display: flex;
+    }
+
+    .gameSelector {
+        display: none;
+    }
+}

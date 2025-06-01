@@ -6,11 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "../../styles/profile.module.css";
 
-export default function ProfilePage() {
+export default function ValorantProfilePage() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
-    const [selectedGame, setSelectedGame] = useState("valorant");
     const router = useRouter();
 
     useEffect(() => {
@@ -22,7 +21,7 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className={styles.loadingContainer}>
+            <div className={styles.valorantLoadingContainer}>
                 <div className={`card ${styles.loadingCard}`}>
                     <div className={styles.loadingIcon}>⏳</div>
                     <p>로딩 중...</p>
@@ -31,7 +30,7 @@ export default function ProfilePage() {
         );
     }
 
-    const getTierGradient = (tier) => {
+    const getValorantTierGradient = (tier) => {
         if (!tier) return "#6b7280, #4b5563";
         const tierName = tier.toLowerCase();
         if (tierName.includes("아이언")) return "#4b5563, #374151";
@@ -39,22 +38,16 @@ export default function ProfilePage() {
         if (tierName.includes("실버")) return "#d1d5db, #9ca3af";
         if (tierName.includes("골드")) return "#fbbf24, #f59e0b";
         if (tierName.includes("플래티넘")) return "#2dd4bf, #06b6d4";
-        if (tierName.includes("에메랄드")) return "#34d399, #10b981";
         if (tierName.includes("다이아몬드")) return "#60a5fa, #6366f1";
-        if (tierName.includes("마스터")) return "#a855f7, #7c3aed";
-        if (tierName.includes("그랜드마스터")) return "#ef4444, #e11d48";
-        if (tierName.includes("챌린저")) return "#fde047, #fb923c";
+        if (tierName.includes("어센던트")) return "#34d399, #10b981";
+        if (tierName.includes("불멸") || tierName.includes("이모탈"))
+            return "#a855f7, #7c3aed";
+        if (tierName.includes("레디언트")) return "#fde047, #fb923c";
         return "#6b7280, #4b5563";
     };
 
-    const getCurrentTier = () => {
-        return selectedGame === "valorant"
-            ? user.stats.valorant.rank
-            : user.stats.lol.rank;
-    };
-
     return (
-        <div className={styles.container}>
+        <div className={styles.valorantContainer}>
             {/* Profile Header */}
             <div className={styles.profileHeader}>
                 <div className={`container ${styles.profileHeaderContainer}`}>
@@ -64,8 +57,8 @@ export default function ProfilePage() {
                             <div
                                 className={styles.avatar}
                                 style={{
-                                    background: `linear-gradient(to right, ${getTierGradient(
-                                        getCurrentTier()
+                                    background: `linear-gradient(to right, ${getValorantTierGradient(
+                                        user.valorantTier
                                     )})`,
                                 }}
                             >
@@ -77,10 +70,10 @@ export default function ProfilePage() {
                             </div>
                             <div className={styles.statusBadge}>
                                 <div
-                                    className={`${styles.statusIcon} ${styles.lolStatusIcon}`}
+                                    className={`${styles.statusIcon} ${styles.valorantStatusIcon}`}
                                 >
                                     <span className={styles.statusIconText}>
-                                        ✓
+                                        🎯
                                     </span>
                                 </div>
                             </div>
@@ -92,45 +85,26 @@ export default function ProfilePage() {
                                 {user.username}
                             </h1>
                             <div className={styles.profileMeta}>
-                                {getCurrentTier() && (
+                                {user.valorantTier && (
                                     <span
                                         className={styles.tierBadge}
                                         style={{
-                                            background: `linear-gradient(to right, ${getTierGradient(
-                                                getCurrentTier()
+                                            background: `linear-gradient(to right, ${getValorantTierGradient(
+                                                user.valorantTier
                                             )})`,
                                         }}
                                     >
-                                        {getCurrentTier()}
+                                        {user.valorantTier}
                                     </span>
                                 )}
                                 <span className={styles.metaItem}>
                                     <span>🌍</span>
                                     <span>KR 서버</span>
                                 </span>
-                            </div>
-
-                            <div className={styles.gameSelector}>
-                                <button
-                                    onClick={() => setSelectedGame("valorant")}
-                                    className={`${styles.gameButton} ${
-                                        selectedGame === "valorant"
-                                            ? `${styles.gameButtonActive} ${styles.valorantGameButton}`
-                                            : styles.gameButtonInactive
-                                    }`}
-                                >
-                                    🎯 발로란트
-                                </button>
-                                <button
-                                    onClick={() => setSelectedGame("lol")}
-                                    className={`${styles.gameButton} ${
-                                        selectedGame === "lol"
-                                            ? `${styles.gameButtonActive} ${styles.lolGameButton}`
-                                            : styles.gameButtonInactive
-                                    }`}
-                                >
-                                    ⚔️ 리그 오브 레전드
-                                </button>
+                                <span className={styles.metaItem}>
+                                    <span>🎯</span>
+                                    <span>RR: {user.stats.valorant.rr}</span>
+                                </span>
                             </div>
                         </div>
 
@@ -142,7 +116,7 @@ export default function ProfilePage() {
                                 프로필 편집
                             </button>
                             <button
-                                className={`btn btn-primary ${styles.addFriendButton}`}
+                                className={`btn ${styles.valorantAddFriendButton}`}
                             >
                                 친구 추가
                             </button>
@@ -159,6 +133,7 @@ export default function ProfilePage() {
                         { id: "overview", label: "개요", icon: "📊" },
                         { id: "stats", label: "통계", icon: "📈" },
                         { id: "matches", label: "최근 경기", icon: "🎮" },
+                        { id: "agents", label: "에이전트", icon: "🎯" },
                         { id: "posts", label: "내 게시물", icon: "📝" },
                     ].map((tab) => (
                         <button
@@ -166,7 +141,7 @@ export default function ProfilePage() {
                             onClick={() => setActiveTab(tab.id)}
                             className={`${styles.tabButton} ${
                                 activeTab === tab.id
-                                    ? `${styles.tabButtonActive} ${styles.lolTabActive}`
+                                    ? `${styles.tabButtonActive} ${styles.valorantTabActive}`
                                     : styles.tabButtonInactive
                             }`}
                         >
@@ -179,109 +154,81 @@ export default function ProfilePage() {
                 {/* Tab Content */}
                 {activeTab === "overview" && (
                     <div className={styles.overviewGrid}>
-                        {/* 선택된 게임 통계 */}
+                        {/* 발로란트 랭크 정보 */}
                         <div className={`card ${styles.statsCard}`}>
                             <h3 className={styles.cardTitle}>
-                                <span>
-                                    {selectedGame === "valorant" ? "🎯" : "⚔️"}
-                                </span>
-                                {selectedGame === "valorant"
-                                    ? "발로란트 통계"
-                                    : "리그 오브 레전드 통계"}
+                                <span>🏆</span>
+                                랭크 정보
                             </h3>
                             <div className={styles.statsGrid}>
                                 <div className={styles.statRow}>
-                                    <span>랭크:</span>
+                                    <span>현재 랭크:</span>
                                     <span className={styles.statValue}>
-                                        {selectedGame === "valorant"
-                                            ? user.stats.valorant.rank
-                                            : user.stats.lol.rank}
+                                        {user.stats.valorant.rank}
                                     </span>
                                 </div>
                                 <div className={styles.statRow}>
-                                    <span>
-                                        {selectedGame === "valorant"
-                                            ? "RR:"
-                                            : "LP:"}
-                                    </span>
+                                    <span>RR:</span>
                                     <span className={styles.statValue}>
-                                        {selectedGame === "valorant"
-                                            ? user.stats.valorant.rr
-                                            : user.stats.lol.lp}
+                                        {user.stats.valorant.rr}
                                     </span>
                                 </div>
-                                {selectedGame === "valorant" ? (
-                                    <>
-                                        <div className={styles.statRow}>
-                                            <span>평균 ACS:</span>
-                                            <span className={styles.statValue}>
-                                                {user.stats.valorant.acs}
-                                            </span>
-                                        </div>
-                                        <div className={styles.statRow}>
-                                            <span>K/D:</span>
-                                            <span className={styles.statValue}>
-                                                {user.stats.valorant.kd}
-                                            </span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className={styles.statRow}>
-                                        <span>KDA:</span>
-                                        <span className={styles.statValue}>
-                                            {user.stats.lol.kda}
-                                        </span>
-                                    </div>
-                                )}
                                 <div className={styles.statRow}>
                                     <span>승률:</span>
                                     <span
                                         className={
-                                            (selectedGame === "valorant"
-                                                ? user.stats.valorant.winRate
-                                                : user.stats.lol.winRate) > 50
+                                            user.stats.valorant.winRate > 50
                                                 ? styles.winRatePositive
                                                 : styles.winRateNegative
                                         }
                                     >
-                                        {selectedGame === "valorant"
-                                            ? user.stats.valorant.winRate
-                                            : user.stats.lol.winRate}
-                                        %
+                                        {user.stats.valorant.winRate}%
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 주요 캐릭터/에이전트 */}
+                        {/* 게임 통계 */}
                         <div className={`card ${styles.statsCard}`}>
                             <h3 className={styles.cardTitle}>
-                                <span>🏆</span>
-                                주요{" "}
-                                {selectedGame === "valorant"
-                                    ? "에이전트"
-                                    : "챔피언"}
+                                <span>📈</span>
+                                게임 통계
+                            </h3>
+                            <div className={styles.statsGrid}>
+                                <div className={styles.statRow}>
+                                    <span>평균 ACS:</span>
+                                    <span className={styles.statValue}>
+                                        {user.stats.valorant.acs}
+                                    </span>
+                                </div>
+                                <div className={styles.statRow}>
+                                    <span>K/D 비율:</span>
+                                    <span className={styles.statValue}>
+                                        {user.stats.valorant.kd}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 주요 에이전트 */}
+                        <div className={`card ${styles.statsCard}`}>
+                            <h3 className={styles.cardTitle}>
+                                <span>🎯</span>
+                                주요 에이전트
                             </h3>
                             <div className={styles.characterTags}>
-                                {(selectedGame === "valorant"
-                                    ? user.mainAgents
-                                    : user.mainChampions
-                                ).map((character, index) => (
+                                {user.mainAgents.map((agent, index) => (
                                     <span
                                         key={index}
-                                        className={`${styles.characterTag} ${
-                                            selectedGame === "valorant"
-                                                ? styles.valorantCharacterTag
-                                                : styles.lolCharacterTag
-                                        }`}
+                                        className={`${styles.characterTag} ${styles.valorantCharacterTag}`}
                                     >
-                                        {character}
+                                        {agent}
                                     </span>
                                 ))}
                             </div>
                         </div>
 
-                        {/* 활동 통계 */}
+                        {/* 커뮤니티 활동 */}
                         <div className={`card ${styles.statsCard}`}>
                             <h3 className={styles.cardTitle}>
                                 <span>📊</span>
@@ -314,72 +261,65 @@ export default function ProfilePage() {
                 {activeTab === "matches" && (
                     <div className={`card ${styles.matchesContainer}`}>
                         <h3 className={styles.cardTitle}>
-                            <span>
-                                {selectedGame === "valorant" ? "🎯" : "⚔️"}
-                            </span>
-                            {selectedGame === "valorant"
-                                ? "발로란트"
-                                : "리그 오브 레전드"}{" "}
+                            <span>🎮</span>
                             최근 경기
                         </h3>
                         <div className={styles.matchesList}>
-                            {(selectedGame === "valorant"
-                                ? user.stats.valorant.recentMatches
-                                : user.stats.lol.recentMatches
-                            ).map((match, index) => (
-                                <div
-                                    key={index}
-                                    className={`${styles.matchItem} ${
-                                        match.result === "승리"
-                                            ? styles.matchItemWin
-                                            : styles.matchItemLoss
-                                    }`}
-                                >
-                                    <div className={styles.matchHeader}>
-                                        <span className={styles.matchTitle}>
-                                            {selectedGame === "valorant"
-                                                ? match.map
-                                                : match.champion}
-                                        </span>
-                                        <span
-                                            className={`${styles.matchResult} ${
-                                                match.result === "승리"
-                                                    ? styles.matchResultWin
-                                                    : styles.matchResultLoss
-                                            }`}
-                                        >
-                                            {match.result}
-                                        </span>
-                                    </div>
-                                    <div className={styles.matchDetails}>
-                                        <span>
-                                            {selectedGame === "valorant"
-                                                ? match.agent
-                                                : match.position}
-                                        </span>
-                                        <span>
-                                            {selectedGame === "valorant"
-                                                ? `ACS: ${match.acs}`
-                                                : `KDA: ${match.kda}`}
-                                        </span>
-                                    </div>
-                                    {selectedGame === "valorant" && (
+                            {user.stats.valorant.recentMatches.map(
+                                (match, index) => (
+                                    <div
+                                        key={index}
+                                        className={`${styles.matchItem} ${
+                                            match.result === "승리"
+                                                ? styles.matchItemWin
+                                                : styles.matchItemLoss
+                                        }`}
+                                    >
+                                        <div className={styles.matchHeader}>
+                                            <span className={styles.matchTitle}>
+                                                {match.map}
+                                            </span>
+                                            <span
+                                                className={`${
+                                                    styles.matchResult
+                                                } ${
+                                                    match.result === "승리"
+                                                        ? styles.matchResultWin
+                                                        : styles.matchResultLoss
+                                                }`}
+                                            >
+                                                {match.result}
+                                            </span>
+                                        </div>
+                                        <div className={styles.matchDetails}>
+                                            <span>{match.agent}</span>
+                                            <span>ACS: {match.acs}</span>
+                                        </div>
                                         <div className={styles.matchScore}>
                                             스코어: {match.score}
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                    </div>
+                                )
+                            )}
                         </div>
                     </div>
                 )}
 
-                {/* 다른 탭들도 비슷하게 구현 */}
+                {/* 다른 탭들 */}
                 {activeTab === "stats" && (
                     <div className={`card ${styles.placeholderCard}`}>
                         <h3>상세 통계</h3>
                         <p className={styles.placeholderText}>
                             상세 통계 기능은 곧 추가될 예정입니다.
+                        </p>
+                    </div>
+                )}
+
+                {activeTab === "agents" && (
+                    <div className={`card ${styles.placeholderCard}`}>
+                        <h3>에이전트 통계</h3>
+                        <p className={styles.placeholderText}>
+                            에이전트별 상세 통계는 곧 추가될 예정입니다.
                         </p>
                     </div>
                 )}

@@ -1,0 +1,388 @@
+.container {
+    min-height: 100vh;
+    background: linear-gradient(
+        to bottom right,
+        var(--neutral-50),
+        rgba(30, 136, 229, 0.05)
+    );
+}
+
+.valorantContainer {
+    min-height: 100vh;
+    background: linear-gradient(
+        to bottom right,
+        var(--neutral-50),
+        rgba(255, 70, 85, 0.05)
+    );
+}
+
+.loadingContainer {
+    min-height: 100vh;
+    background: linear-gradient(
+        to bottom right,
+        var(--neutral-50),
+        rgba(30, 136, 229, 0.05)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.valorantLoadingContainer {
+    min-height: 100vh;
+    background: linear-gradient(
+        to bottom right,
+        var(--neutral-50),
+        rgba(255, 70, 85, 0.05)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loadingCard {
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3xl);
+    text-align: center;
+}
+
+.loadingIcon {
+    font-size: 48px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.profileHeader {
+    background-color: var(--surface);
+    box-shadow: var(--shadow-lg);
+}
+
+.profileHeaderContainer {
+    padding-top: var(--spacing-2xl);
+    padding-bottom: var(--spacing-2xl);
+}
+
+.profileHeaderContent {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xl);
+    flex-wrap: wrap;
+}
+
+.avatarContainer {
+    position: relative;
+}
+
+.avatar {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.avatarText {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+}
+
+.statusBadge {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    background-color: var(--surface);
+    border-radius: 50%;
+    padding: 4px;
+    box-shadow: var(--shadow-lg);
+}
+
+.statusIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lolStatusIcon {
+    background: linear-gradient(to right, #34d399, #10b981);
+}
+
+.valorantStatusIcon {
+    background: linear-gradient(to right, #ff4655, #0f1419);
+}
+
+.statusIconText {
+    color: white;
+    font-size: 14px;
+}
+
+.profileInfo {
+    flex: 1;
+}
+
+.profileTitle {
+    margin-bottom: var(--spacing-sm);
+}
+
+.profileMeta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-md);
+}
+
+.tierBadge {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: 9999px;
+    color: white;
+    font-weight: 600;
+    box-shadow: var(--shadow-md);
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-secondary);
+}
+
+.gameSelector {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.gameButton {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all var(--transition-normal);
+}
+
+.gameButtonActive {
+    color: white;
+}
+
+.gameButtonInactive {
+    background: var(--neutral-100);
+    color: var(--text-secondary);
+}
+
+.valorantGameButton {
+    background: linear-gradient(135deg, #ff4655 0%, #0f1419 100%);
+}
+
+.lolGameButton {
+    background: linear-gradient(135deg, #1e88e5 0%, #3b82f6 100%);
+}
+
+.actionButtons {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.editButton {
+    border-radius: 9999px;
+}
+
+.addFriendButton {
+    border-radius: 9999px;
+}
+
+.valorantAddFriendButton {
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #ff4655 0%, #0f1419 100%);
+    color: white;
+}
+
+.contentContainer {
+    padding-top: var(--spacing-2xl);
+    padding-bottom: var(--spacing-2xl);
+}
+
+.tabNavigation {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+    border-bottom: 1px solid var(--neutral-200);
+    padding-bottom: var(--spacing-lg);
+}
+
+.tabButton {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.tabButtonActive {
+    color: white;
+    font-weight: 600;
+}
+
+.tabButtonInactive {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.lolTabActive {
+    background: var(--accent);
+}
+
+.valorantTabActive {
+    background: linear-gradient(135deg, #ff4655 0%, #0f1419 100%);
+}
+
+.tabIcon {
+    margin-right: var(--spacing-sm);
+}
+
+.overviewGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.statsCard {
+    padding: var(--spacing-xl);
+}
+
+.cardTitle {
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.statsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.statRow {
+    display: flex;
+    justify-content: space-between;
+}
+
+.statValue {
+    font-weight: 600;
+}
+
+.winRatePositive {
+    font-weight: 600;
+    color: #10b981;
+}
+
+.winRateNegative {
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.characterTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.characterTag {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.valorantCharacterTag {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 70, 85, 0.1) 0%,
+        rgba(15, 20, 25, 0.1) 100%
+    );
+    color: #ff4655;
+}
+
+.lolCharacterTag {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 136, 229, 0.1) 0%,
+        rgba(59, 130, 246, 0.1) 100%
+    );
+    color: #1e88e5;
+}
+
+.matchesContainer {
+    padding: var(--spacing-xl);
+}
+
+.matchesList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.matchItem {
+    padding: var(--spacing-md);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+}
+
+.matchItemWin {
+    border-left: 4px solid #10b981;
+}
+
+.matchItemLoss {
+    border-left: 4px solid #ef4444;
+}
+
+.matchHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.matchTitle {
+    font-weight: 600;
+}
+
+.matchResult {
+    font-weight: 600;
+}
+
+.matchResultWin {
+    color: #10b981;
+}
+
+.matchResultLoss {
+    color: #ef4444;
+}
+
+.matchDetails {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.matchScore {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.placeholderCard {
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.placeholderText {
+    color: var(--text-secondary);
+}

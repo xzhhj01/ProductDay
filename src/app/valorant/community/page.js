@@ -5,370 +5,179 @@ import Link from "next/link";
 import { requireAuth } from "@/app/utils/auth-check";
 import { useRouter } from "next/navigation";
 import LoginModal from "@/app/components/LoginModal";
-import styles from "../../styles/community.module.css";
 
-export default function CommunityPage() {
+export default function ValorantCommunityPage() {
     const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [posts] = useState([
         {
             id: 1,
-            title: "바론 스틸 vs 팀파이트 선택 상황",
+            title: "어센트 A사이트 진입 vs 미드 컨트롤",
             content:
-                "바론을 치고 있는데 상대팀이 오는 상황에서 어떤 선택이 맞을까요?",
-            author: "정글러123",
-            tier: "골드 2",
-            votes: { a: 45, b: 23 },
-            tags: ["바론", "팀파이트", "정글"],
-            situation: "오브젝트",
-            map: "소환사의 협곡",
-            game: "리그 오브 레전드",
-            champions: ["리신", "그레이브즈"],
-            createdAt: "2시간 전",
-            comments: 12,
+                "라운드 초반에 A사이트로 바로 진입할지 미드를 먼저 컨트롤할지 고민됩니다.",
+            author: "듀얼리스트123",
+            tier: "다이아몬드 2",
+            votes: { a: 67, b: 34 },
+            tags: ["사이트 진입", "전략", "팀플레이"],
+            situation: "사이트 진입",
+            map: "어센트",
+            game: "발로란트",
+            agents: ["제트", "레이나"],
+            createdAt: "1시간 전",
+            comments: 15,
         },
         {
             id: 2,
-            title: "탑 라인전 갱킹 타이밍 판정",
+            title: "바인드 B사이트 방어 포지션",
             content:
-                "상대방이 푸시하고 있을 때 갱킹을 요청했는데 안 와줬어요. 누구 잘못인가요?",
-            author: "탑솔러456",
-            tier: "플래티넘 4",
-            votes: { a: 67, b: 34 },
-            tags: ["탑", "갱킹", "라인전"],
-            situation: "라인전",
-            map: "소환사의 협곡",
-            game: "리그 오브 레전드",
-            champions: ["가렌", "다리우스"],
-            createdAt: "4시간 전",
+                "상대팀이 B사이트로 러시할 때 어떤 포지션이 가장 효과적일까요?",
+            author: "센티넬456",
+            tier: "플래티넘 1",
+            votes: { a: 45, b: 23 },
+            tags: ["사이트 방어", "포지셔닝", "센티넬"],
+            situation: "사이트 방어",
+            map: "바인드",
+            game: "발로란트",
+            agents: ["사이퍼", "킬조이"],
+            createdAt: "3시간 전",
             comments: 8,
         },
         {
             id: 3,
-            title: "서포터 로밍 vs 원딜 보호",
-            content: "미드에 갱킹 기회가 있는데 원딜이 혼자 남는 상황입니다.",
-            author: "서포터789",
-            tier: "다이아몬드 3",
+            title: "헤이븐 리테이크 상황 판단",
+            content:
+                "C사이트를 빼앗겼을 때 리테이크 타이밍과 방법에 대해 조언 부탁드립니다.",
+            author: "컨트롤러789",
+            tier: "초월자 3",
             votes: { a: 89, b: 12 },
-            tags: ["서포터", "로밍", "원딜"],
-            situation: "로밍",
-            map: "소환사의 협곡",
-            game: "리그 오브 레전드",
-            champions: ["쓰레쉬", "노틸러스"],
-            createdAt: "6시간 전",
-            comments: 15,
+            tags: ["리테이크", "타이밍", "팀워크"],
+            situation: "리테이크",
+            map: "헤이븐",
+            game: "발로란트",
+            agents: ["오멘", "바이퍼"],
+            createdAt: "5시간 전",
+            comments: 22,
         },
         {
             id: 4,
-            title: "칼바람 나락 시작 아이템 선택",
+            title: "스플릿 미드 컨트롤 에이전트 선택",
             content:
-                "AP 챔피언으로 시작할 때 잃은 챕터 vs 도란링 어떤게 좋나요?",
-            author: "칼바람장인",
-            tier: "실버 1",
-            votes: { a: 34, b: 56 },
-            tags: ["아이템", "시작템", "AP"],
-            situation: "아이템빌드",
-            map: "칼바람 나락",
-            game: "리그 오브 레전드",
-            champions: ["럭스", "제라스"],
-            createdAt: "8시간 전",
-            comments: 20,
-        },
-        {
-            id: 5,
-            title: "베이븐 에코 로테이션 어디로?",
-            content:
-                "B 사이트 베이븐에서 2명이 들어오는데 에코 어디로 가야 하나요?",
-            author: "발로란트유저99",
+                "스플릿에서 미드를 효과적으로 컨트롤할 수 있는 에이전트 조합이 궁금합니다.",
+            author: "이니시에이터",
             tier: "골드 3",
-            votes: { a: 56, b: 32 },
-            tags: ["베이븐", "로테이션", "수비"],
-            situation: "사이트 방어",
-            map: "베이븐",
-            game: "발로란트",
-            agents: ["오멘", "제트"],
-            createdAt: "5시간 전",
-            comments: 9,
-        },
-        {
-            id: 6,
-            title: "스플릿 A사이트 리테이크 진입 타이밍",
-            content: "A 사이트를 뺏겼을 때 스모크 없이 진입해야 할까요?",
-            author: "레이디언트123",
-            tier: "다이아몬드 2",
-            votes: { a: 78, b: 43 },
-            tags: ["스플릿", "리테이크", "A사이트"],
-            situation: "리테이크",
+            votes: { a: 34, b: 56 },
+            tags: ["미드 컨트롤", "에이전트 선택", "맵 컨트롤"],
+            situation: "맵 컨트롤",
             map: "스플릿",
             game: "발로란트",
-            agents: ["브림스톤", "페이드"],
-            createdAt: "1시간 전",
-            comments: 18,
-        },
-        {
-            id: 7,
-            title: "어센트 B메인 연막 타이밍 판정",
-            content:
-                "러쉬할 때 오멘 연막을 먼저 깔고 가야 하나요, 아니면 진입하면서 깔아야 하나요?",
-            author: "불멸3유저",
-            tier: "불멸 3",
-            votes: { a: 92, b: 31 },
-            tags: ["어센트", "연막", "러쉬"],
-            situation: "사이트 진입",
-            map: "어센트",
-            game: "발로란트",
-            agents: ["오멘", "레이나"],
-            createdAt: "3시간 전",
-            comments: 24,
-        },
-        {
-            id: 8,
-            title: "헤이븐 가라지 수비 로테이션",
-            content: "C 사이트에서 가라지 소리 들렸을 때 바로 로테해야 하나요?",
-            author: "플래3수비전문",
-            tier: "플래티넘 3",
-            votes: { a: 45, b: 67 },
-            tags: ["헤이븐", "로테이션", "수비"],
-            situation: "사이트 방어",
-            map: "헤이븐",
-            game: "발로란트",
-            agents: ["사이퍼", "소바"],
-            createdAt: "2시간 전",
-            comments: 15,
-        },
-        {
-            id: 9,
-            title: "바인드 A숏 홀드 각도 선택",
-            content:
-                "A숏 홀드할 때 화장실 앞에서 보는게 나은가요 아니면 램프에서 보는게 나은가요?",
-            author: "실버탈출희망",
-            tier: "실버 2",
-            votes: { a: 34, b: 89 },
-            tags: ["바인드", "홀드", "수비"],
-            situation: "사이트 방어",
-            map: "바인드",
-            game: "발로란트",
-            agents: ["킬조이", "세이지"],
+            agents: ["소바", "브리치"],
             createdAt: "7시간 전",
-            comments: 31,
-        },
-        {
-            id: 10,
-            title: "아이스박스 B사이트 얼티 사용 타이밍",
-            content:
-                "제트 얼티 쓸 때 연막 먼저 까는게 좋나요 아니면 바로 날아가는게 좋나요?",
-            author: "제트원트릭",
-            tier: "골드 1",
-            votes: { a: 56, b: 72 },
-            tags: ["아이스박스", "얼티메이트", "제트"],
-            situation: "얼티메이트",
-            map: "아이스박스",
-            game: "발로란트",
-            agents: ["제트", "레이즈"],
-            createdAt: "4시간 전",
-            comments: 19,
+            comments: 12,
         },
     ]);
 
     const [activeFilters, setActiveFilters] = useState({
         situation: [],
         map: [],
-        champion: [],
+        agent: [],
         tag: [],
     });
 
     // Show more states
-    const [showAllChampions, setShowAllChampions] = useState(false);
-    const [championSearch, setChampionSearch] = useState("");
+    const [agentSearch, setAgentSearch] = useState("");
 
-    // All champions data
-    const allChampions = [
-        "가렌",
-        "갈리오",
-        "갱플랭크",
-        "그라가스",
-        "그레이브즈",
-        "그웬",
-        "나르",
-        "나미",
-        "나서스",
-        "노틸러스",
-        "녹턴",
-        "누누와 윌럼프",
-        "니달리",
-        "니코",
-        "닐라",
-        "다리우스",
-        "다이애나",
-        "드레이븐",
-        "라이즈",
-        "라칸",
-        "람머스",
-        "럭스",
-        "럼블",
-        "레나타 글라스크",
-        "레넥톤",
-        "레오나",
-        "렉사이",
-        "렐",
-        "렝가",
-        "루시안",
-        "룰루",
-        "르블랑",
-        "리 신",
-        "리븐",
-        "리산드라",
-        "릴리아",
-        "마스터 이",
-        "마오카이",
-        "말자하",
-        "말파이트",
-        "모데카이저",
-        "모르가나",
-        "문도 박사",
-        "미스 포츈",
-        "바드",
-        "바루스",
-        "바이",
-        "베이가",
-        "베인",
-        "벨코즈",
-        "볼리베어",
-        "브라움",
-        "브랜드",
-        "블라디미르",
-        "블리츠크랭크",
-        "비에고",
-        "빅토르",
-        "뽀삐",
-        "사미라",
-        "사이온",
-        "사일러스",
-        "샤코",
-        "세나",
-        "세라핀",
-        "세주아니",
-        "소나",
-        "소라카",
-        "쉔",
-        "쉬바나",
-        "스웨인",
-        "스카너",
-        "신 짜오",
-        "신드라",
-        "신지드",
-        "쓰레쉬",
-        "아리",
-        "아무무",
-        "아우렐리온 솔",
-        "아이번",
-        "아지르",
-        "아칼리",
-        "아크샨",
-        "아트록스",
-        "아펠리오스",
-        "알리스타",
-        "애니",
-        "애니비아",
-        "애쉬",
-        "야스오",
-        "에코",
-        "엘리스",
-        "오공",
-        "오른",
-        "오리아나",
-        "올라프",
-        "요네",
-        "요릭",
-        "우디르",
-        "우르곳",
-        "워윅",
-        "유미",
-        "이렐리아",
-        "이블린",
-        "이즈리얼",
-        "일라오이",
-        "자르반 4세",
-        "자야",
-        "자이라",
-        "자크",
-        "잔나",
-        "잭스",
-        "제드",
-        "제라스",
-        "제리",
-        "제이스",
-        "조이",
-        "직스",
-        "진",
-        "질리언",
-        "징크스",
-        "초가스",
-        "카르마",
-        "카밀",
-        "카사딘",
-        "카서스",
-        "카시오페아",
-        "카이사",
-        "카직스",
-        "카타리나",
-        "칼리스타",
-        "케넨",
-        "케이틀린",
-        "케인",
-        "케일",
-        "코그모",
-        "코르키",
-        "퀸",
-        "클레드",
-        "키아나",
-        "킨드레드",
-        "타릭",
-        "탈론",
-        "탈리야",
-        "탐 켄치",
-        "트런들",
-        "트리스타나",
-        "트린다미어",
-        "트위스티드 페이트",
-        "트위치",
-        "티모",
-        "파이크",
-        "판테온",
-        "피들스틱",
-        "피오라",
-        "피즈",
-        "하이머딩거",
-        "헤카림",
-        "흐웨이",
+    // All agents data (역할군별 분류에서 사용)
+    const allAgents = [
+        "게코",
+        "네온",
+        "데드락",
+        "레이나",
+        "레이즈",
+        "멘",
+        "바이퍼",
+        "브리치",
+        "브림스톤",
+        "세이지",
+        "소바",
+        "스카이",
+        "아스트라",
+        "아이소",
+        "오멘",
+        "요루",
+        "제트",
+        "체임버",
+        "케이오",
+        "킬조이",
+        "페이드",
+        "피닉스",
+        "하버",
+        "사이퍼",
+        "클로브",
+    ].sort();
+
+    const valorantMaps = [
+        "어센트",
+        "바인드",
+        "헤이븐",
+        "스플릿",
+        "아이스박스",
+        "브리즈",
+        "프랙처",
+        "펄",
+        "로터스",
+        "선셋",
     ];
 
-    // Filter posts to show only LoL posts
-    const lolPosts = useMemo(() => {
-        return posts.filter((post) => post.game === "리그 오브 레전드");
-    }, [posts]);
-
-    // LoL specific data
-    const lolMaps = ["소환사의 협곡", "칼바람 나락"];
-
-    const lolSituations = [
-        "라인전",
-        "갱킹",
-        "로밍",
-        "한타",
-        "오브젝트",
-        "아이템빌드",
-        "정글링",
-        "백도어",
+    const valorantSituations = [
+        "사이트 진입",
+        "사이트 방어",
+        "리테이크",
+        "세팅",
+        "클러치",
+        "이코 라운드",
+        "포스 바이",
+        "포스트 플랜트",
     ];
 
-    // Filter champions based on search
-    const filteredChampions = useMemo(() => {
-        if (!championSearch) return allChampions;
-        return allChampions.filter((champion) =>
-            champion.toLowerCase().includes(championSearch.toLowerCase())
+    // Filter agents based on search
+    const filteredAgents = useMemo(() => {
+        if (!agentSearch) return allAgents;
+        return allAgents.filter((agent) =>
+            agent.toLowerCase().includes(agentSearch.toLowerCase())
         );
-    }, [championSearch, allChampions]);
+    }, [agentSearch, allAgents]);
+
+    // 에이전트를 역할군별로 분류
+    const agentsByRole = {
+        엔트리: [
+            "제트",
+            "레이나",
+            "레이즈",
+            "피닉스",
+            "요루",
+            "네온",
+            "아이소",
+        ],
+        척후대: ["소바", "브리치", "스카이", "케이오", "페이드", "게코"],
+        전략가: ["오멘", "바이퍼", "브림스톤", "아스트라", "하버", "클로브"],
+        감시자: ["사이퍼", "킬조이", "세이지", "체임버", "데드락"],
+    };
+
+    // 검색어에 따른 역할군별 필터링
+    const filteredAgentsByRole = useMemo(() => {
+        if (!agentSearch) return agentsByRole;
+
+        const filtered = {};
+        Object.keys(agentsByRole).forEach((role) => {
+            const filteredRoleAgents = agentsByRole[role].filter((agent) =>
+                agent.toLowerCase().includes(agentSearch.toLowerCase())
+            );
+            if (filteredRoleAgents.length > 0) {
+                filtered[role] = filteredRoleAgents;
+            }
+        });
+        return filtered;
+    }, [agentSearch, agentsByRole]);
 
     const toggleFilter = (category, value) => {
         setActiveFilters((prev) => ({
@@ -387,26 +196,30 @@ export default function CommunityPage() {
         if (tierLower.includes("골드")) return "tier-gold";
         if (tierLower.includes("플래티넘")) return "tier-platinum";
         if (tierLower.includes("다이아몬드")) return "tier-diamond";
-        if (tierLower.includes("마스터")) return "tier-master";
-        if (tierLower.includes("그랜드마스터")) return "tier-grandmaster";
-        if (tierLower.includes("챌린저")) return "tier-challenger";
+        if (tierLower.includes("아센던트") || tierLower.includes("초월자"))
+            return "tier-ascendant";
+        if (tierLower.includes("불멸")) return "tier-immortal";
+        if (tierLower.includes("레디언트")) return "tier-radiant";
         return "tier-unranked";
     };
 
     const getTagClass = (tag) => {
         const tagColors = [
-            "tag-blue",
-            "tag-green",
-            "tag-purple",
-            "tag-orange",
-            "tag-pink",
             "tag-red",
+            "tag-orange",
+            "tag-yellow",
+            "tag-green",
+            "tag-blue",
+            "tag-purple",
         ];
         return tagColors[tag.length % tagColors.length];
     };
 
     const filteredPosts = useMemo(() => {
-        return lolPosts.filter((post) => {
+        return posts.filter((post) => {
+            // 발로란트 게시물만 표시
+            if (post.game !== "발로란트") return false;
+
             // 상황 필터
             if (
                 activeFilters.situation.length > 0 &&
@@ -423,12 +236,12 @@ export default function CommunityPage() {
                 return false;
             }
 
-            // 챔피언 필터
-            if (activeFilters.champion.length > 0) {
-                const hasChampion = post.champions?.some((champion) =>
-                    activeFilters.champion.includes(champion)
+            // 에이전트 필터
+            if (activeFilters.agent.length > 0) {
+                const hasAgent = post.agents?.some((agent) =>
+                    activeFilters.agent.includes(agent)
                 );
-                if (!hasChampion) return false;
+                if (!hasAgent) return false;
             }
 
             // 태그 필터
@@ -441,21 +254,21 @@ export default function CommunityPage() {
 
             return true;
         });
-    }, [lolPosts, activeFilters]);
+    }, [posts, activeFilters]);
 
     const clearAllFilters = () => {
         setActiveFilters({
             situation: [],
             map: [],
-            champion: [],
+            agent: [],
             tag: [],
         });
-        setChampionSearch("");
+        setAgentSearch("");
     };
 
     const hasActiveFilters =
         Object.values(activeFilters).some((arr) => arr.length > 0) ||
-        championSearch;
+        agentSearch;
 
     return (
         <div style={{ minHeight: "100vh", background: "var(--background)" }}>
@@ -484,23 +297,23 @@ export default function CommunityPage() {
                                 fontWeight: 700,
                                 marginBottom: "var(--spacing-sm)",
                                 background:
-                                    "linear-gradient(to right, #1e88e5, #7c3aed)",
+                                    "linear-gradient(to right, #ff4655, #0f1419)",
                                 WebkitBackgroundClip: "text",
                                 WebkitTextFillColor: "transparent",
                                 backgroundClip: "text",
                             }}
                         >
-                            리그 오브 레전드 문철 게시판
+                            발로란트 문철 게시판
                         </h1>
                         <p style={{ color: "var(--text-secondary)" }}>
-                            리그 오브 레전드 플레이 상황을 공유하고 커뮤니티의
-                            판정을 받아보세요
+                            발로란트 플레이 상황을 공유하고 커뮤니티의 판정을
+                            받아보세요
                         </p>
                     </div>
                     <button
                         onClick={() => {
                             requireAuth(
-                                () => router.push("/community/upload"),
+                                () => router.push("/valorant/community/upload"),
                                 setShowLoginModal
                             );
                         }}
@@ -511,6 +324,8 @@ export default function CommunityPage() {
                             borderRadius: "var(--radius-lg)",
                             fontSize: "16px",
                             fontWeight: 600,
+                            background:
+                                "linear-gradient(135deg, #ff4655 0%, #0f1419 100%)",
                         }}
                     >
                         📝 새 글 작성
@@ -558,7 +373,7 @@ export default function CommunityPage() {
                                     <button
                                         onClick={clearAllFilters}
                                         style={{
-                                            color: "var(--accent)",
+                                            color: "#ff4655",
                                             fontSize: "14px",
                                             background: "none",
                                             border: "none",
@@ -589,7 +404,7 @@ export default function CommunityPage() {
                                         gap: "var(--spacing-sm)",
                                     }}
                                 >
-                                    {lolSituations.map((situation) => (
+                                    {valorantSituations.map((situation) => (
                                         <label
                                             key={situation}
                                             style={{
@@ -642,7 +457,7 @@ export default function CommunityPage() {
                                         gap: "var(--spacing-sm)",
                                     }}
                                 >
-                                    {lolMaps.map((map) => (
+                                    {valorantMaps.map((map) => (
                                         <label
                                             key={map}
                                             style={{
@@ -673,7 +488,7 @@ export default function CommunityPage() {
                                 </div>
                             </div>
 
-                            {/* 챔피언별 필터 */}
+                            {/* 에이전트별 필터 */}
                             <div style={{ marginBottom: "var(--spacing-xl)" }}>
                                 <h4
                                     style={{
@@ -683,10 +498,10 @@ export default function CommunityPage() {
                                         color: "var(--text-secondary)",
                                     }}
                                 >
-                                    챔피언별
+                                    에이전트별
                                 </h4>
 
-                                {/* 챔피언 검색 */}
+                                {/* 에이전트 검색 */}
                                 <div
                                     style={{
                                         marginBottom: "var(--spacing-md)",
@@ -694,10 +509,10 @@ export default function CommunityPage() {
                                 >
                                     <input
                                         type="text"
-                                        placeholder="챔피언 검색..."
-                                        value={championSearch}
+                                        placeholder="에이전트 검색..."
+                                        value={agentSearch}
                                         onChange={(e) =>
-                                            setChampionSearch(e.target.value)
+                                            setAgentSearch(e.target.value)
                                         }
                                         className="filter-search"
                                     />
@@ -707,70 +522,95 @@ export default function CommunityPage() {
                                     style={{
                                         display: "flex",
                                         flexDirection: "column",
-                                        gap: "var(--spacing-sm)",
-                                        maxHeight: "200px",
+                                        gap: "var(--spacing-md)",
+                                        maxHeight: "300px",
                                         overflowY: "auto",
                                     }}
                                 >
-                                    {(showAllChampions
-                                        ? filteredChampions
-                                        : filteredChampions.slice(0, 8)
-                                    ).map((champion) => (
-                                        <label
-                                            key={champion}
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                cursor: "pointer",
-                                            }}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={activeFilters.champion.includes(
-                                                    champion
-                                                )}
-                                                onChange={() =>
-                                                    toggleFilter(
-                                                        "champion",
-                                                        champion
-                                                    )
-                                                }
+                                    {Object.keys(filteredAgentsByRole).map(
+                                        (role) => (
+                                            <div key={role}>
+                                                <h5
+                                                    style={{
+                                                        fontSize: "12px",
+                                                        fontWeight: 600,
+                                                        color: "var(--text-primary)",
+                                                        marginBottom:
+                                                            "var(--spacing-sm)",
+                                                        textTransform:
+                                                            "uppercase",
+                                                        letterSpacing: "0.05em",
+                                                    }}
+                                                >
+                                                    {role}
+                                                </h5>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        gap: "var(--spacing-sm)",
+                                                        marginBottom:
+                                                            "var(--spacing-sm)",
+                                                    }}
+                                                >
+                                                    {filteredAgentsByRole[
+                                                        role
+                                                    ].map((agent) => (
+                                                        <label
+                                                            key={agent}
+                                                            style={{
+                                                                display: "flex",
+                                                                alignItems:
+                                                                    "center",
+                                                                cursor: "pointer",
+                                                            }}
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={activeFilters.agent.includes(
+                                                                    agent
+                                                                )}
+                                                                onChange={() =>
+                                                                    toggleFilter(
+                                                                        "agent",
+                                                                        agent
+                                                                    )
+                                                                }
+                                                                style={{
+                                                                    marginRight:
+                                                                        "var(--spacing-sm)",
+                                                                }}
+                                                                className="filter-checkbox"
+                                                            />
+                                                            <span
+                                                                style={{
+                                                                    fontSize:
+                                                                        "14px",
+                                                                }}
+                                                            >
+                                                                {agent}
+                                                            </span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )
+                                    )}
+
+                                    {Object.keys(filteredAgentsByRole)
+                                        .length === 0 &&
+                                        agentSearch && (
+                                            <p
                                                 style={{
-                                                    marginRight:
-                                                        "var(--spacing-sm)",
-                                                }}
-                                                className="filter-checkbox"
-                                            />
-                                            <span style={{ fontSize: "14px" }}>
-                                                {champion}
-                                            </span>
-                                        </label>
-                                    ))}
-                                    {filteredChampions.length > 8 &&
-                                        !championSearch && (
-                                            <button
-                                                onClick={() =>
-                                                    setShowAllChampions(
-                                                        !showAllChampions
-                                                    )
-                                                }
-                                                style={{
-                                                    background: "none",
-                                                    border: "none",
-                                                    color: "var(--accent)",
-                                                    fontSize: "12px",
-                                                    cursor: "pointer",
-                                                    textAlign: "left",
-                                                    padding: 0,
+                                                    fontSize: "14px",
+                                                    color: "var(--text-secondary)",
+                                                    textAlign: "center",
+                                                    padding:
+                                                        "var(--spacing-md)",
                                                 }}
                                             >
-                                                {showAllChampions
-                                                    ? "접기"
-                                                    : `+${
-                                                          filteredChampions.length -
-                                                          8
-                                                      }개 더보기`}
-                                            </button>
+                                                검색 결과가 없습니다
+                                            </p>
                                         )}
                                 </div>
                             </div>
@@ -814,7 +654,7 @@ export default function CommunityPage() {
                                 {filteredPosts.map((post) => (
                                     <Link
                                         key={post.id}
-                                        href={`/community/${post.id}`}
+                                        href={`/valorant/community/${post.id}`}
                                         style={{
                                             textDecoration: "none",
                                             color: "inherit",
@@ -877,7 +717,7 @@ export default function CommunityPage() {
                                                         style={{
                                                             fontSize: "24px",
                                                             fontWeight: 700,
-                                                            color: "var(--accent)",
+                                                            color: "#ff4655",
                                                             marginBottom:
                                                                 "var(--spacing-xs)",
                                                         }}
@@ -943,10 +783,10 @@ export default function CommunityPage() {
                                                         {post.tier}
                                                     </span>
                                                     <span>🗺️ {post.map}</span>
-                                                    {post.champions && (
+                                                    {post.agents && (
                                                         <span>
-                                                            ⚔️{" "}
-                                                            {post.champions.join(
+                                                            🎯{" "}
+                                                            {post.agents.join(
                                                                 ", "
                                                             )}
                                                         </span>
@@ -981,7 +821,7 @@ export default function CommunityPage() {
                 onClose={() => setShowLoginModal(false)}
                 onLoginSuccess={() => {
                     setShowLoginModal(false);
-                    router.push("/community/upload");
+                    router.push("/valorant/community/upload");
                 }}
             />
         </div>

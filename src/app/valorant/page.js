@@ -5,40 +5,43 @@ import { useState } from "react";
 import { requireAuth } from "@/app/utils/auth-check";
 import { useRouter } from "next/navigation";
 import LoginModal from "@/app/components/LoginModal";
-import styles from "./styles/home.module.css";
+import styles from "../styles/home.module.css";
 
-export default function Home() {
+export default function ValorantHome() {
     const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     return (
-        <div className={styles.container}>
+        <div className={styles.valorantContainer}>
             {/* Hero Section */}
-            <section className={styles.heroSection}>
+            <section className={styles.valorantHeroSection}>
                 <div className="container">
                     <div style={{ textAlign: "center" }}>
                         <h1 className={styles.heroTitle}>방구석 대법관</h1>
                         <p className={styles.heroSubtitle}>
-                            플레이 판정을 받고, 실력을 향상시키세요.
+                            발로란트 플레이 판정을 받고, 실력을 향상시키세요.
                             <br />
-                            커뮤니티와 함께 성장하는 리그 오브 레전드 플랫폼
+                            커뮤니티와 함께 성장하는 발로란트 플랫폼
                         </p>
 
                         <div className={styles.heroButtons}>
                             <button
                                 onClick={() => {
                                     requireAuth(
-                                        () => router.push("/community/upload"),
+                                        () =>
+                                            router.push(
+                                                "/valorant/community/upload"
+                                            ),
                                         setShowLoginModal
                                     );
                                 }}
-                                className={`btn btn-primary ${styles.heroButton} ${styles.heroPrimaryButton}`}
+                                className={`btn ${styles.heroButton} ${styles.valorantHeroPrimaryButton}`}
                             >
-                                🎮 영상 업로드
+                                🎯 영상 업로드
                             </button>
-                            <Link href="/community">
+                            <Link href="/valorant/community">
                                 <button
-                                    className={`btn btn-ghost ${styles.heroButton} ${styles.heroSecondaryButton}`}
+                                    className={`btn ${styles.heroButton} ${styles.heroSecondaryButton} ${styles.valorantHeroSecondaryButton}`}
                                 >
                                     📋 게시판 둘러보기
                                 </button>
@@ -58,25 +61,27 @@ export default function Home() {
                 >
                     <h2 className={styles.sectionTitle}>주요 서비스</h2>
                     <p className={styles.sectionSubtitle}>
-                        당신의 실력 향상을 위한 최고의 도구
+                        당신의 발로란트 실력 향상을 위한 최고의 도구
                     </p>
                 </div>
 
                 <div className={styles.featuresGrid}>
                     <Link
-                        href="/community"
+                        href="/valorant/community"
                         style={{ textDecoration: "none", color: "inherit" }}
                     >
                         <div className={`card ${styles.featureCard}`}>
-                            <div className={styles.featureIcon}>📹</div>
-                            <h3 className={styles.featureTitle}>문철 게시판</h3>
+                            <div className={styles.featureIcon}>🎯</div>
+                            <h3 className={styles.featureTitle}>
+                                발로란트 게시판
+                            </h3>
                             <p className={styles.featureDescription}>
-                                플레이 영상을 업로드하고 커뮤니티의 전문적인
-                                판정을 받아보세요. 실시간 피드백으로 빠르게
-                                성장할 수 있습니다.
+                                발로란트 플레이 영상을 업로드하고 커뮤니티의
+                                전문적인 판정을 받아보세요. 에이전트별 전략과 맵
+                                컨트롤 피드백을 받을 수 있습니다.
                             </p>
                             <button
-                                className={`btn btn-accent ${styles.lolCommunityButton}`}
+                                className={`btn ${styles.valorantCommunityButton}`}
                             >
                                 게시판 가기 →
                             </button>
@@ -88,14 +93,15 @@ export default function Home() {
                         style={{ textDecoration: "none", color: "inherit" }}
                     >
                         <div className={`card ${styles.featureCard}`}>
-                            <div className={styles.featureIcon}>🎯</div>
+                            <div className={styles.featureIcon}>🏆</div>
                             <h3 className={styles.featureTitle}>멘토 매칭</h3>
                             <p className={styles.featureDescription}>
-                                검증된 고수들에게 직접 조언을 구해보세요. 1:1
-                                맞춤형 코칭으로 약점을 극복할 수 있습니다.
+                                발로란트 고랭크 플레이어들에게 직접 조언을
+                                구해보세요. 에이전트별 전문 코칭과 맞춤형 전략을
+                                배울 수 있습니다.
                             </p>
                             <button
-                                className={`btn btn-secondary ${styles.lolCommunityButton}`}
+                                className={`btn ${styles.valorantCommunityButton}`}
                             >
                                 멘토 찾기 →
                             </button>
@@ -107,15 +113,27 @@ export default function Home() {
                 <div className={styles.statsSection}>
                     <div className={styles.statsGrid}>
                         <div className={styles.statCard}>
-                            <h4 className={styles.statNumber}>1,234+</h4>
-                            <p className={styles.statLabel}>활성 유저</p>
+                            <h4
+                                className={`${styles.statNumber} ${styles.valorantStatNumber}`}
+                            >
+                                892+
+                            </h4>
+                            <p className={styles.statLabel}>발로란트 유저</p>
                         </div>
                         <div className={styles.statCard}>
-                            <h4 className={styles.statNumber}>567</h4>
+                            <h4
+                                className={`${styles.statNumber} ${styles.valorantStatNumber}`}
+                            >
+                                345
+                            </h4>
                             <p className={styles.statLabel}>영상 리뷰</p>
                         </div>
                         <div className={styles.statCard}>
-                            <h4 className={styles.statNumber}>89%</h4>
+                            <h4
+                                className={`${styles.statNumber} ${styles.valorantStatNumber}`}
+                            >
+                                91%
+                            </h4>
                             <p className={styles.statLabel}>만족도</p>
                         </div>
                     </div>
@@ -127,7 +145,7 @@ export default function Home() {
                 onClose={() => setShowLoginModal(false)}
                 onLoginSuccess={() => {
                     setShowLoginModal(false);
-                    router.push("/community/upload");
+                    router.push("/valorant/community/upload");
                 }}
             />
         </div>
