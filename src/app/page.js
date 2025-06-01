@@ -5,26 +5,75 @@ import { useState } from "react";
 import { requireAuth } from "@/app/utils/auth-check";
 import { useRouter } from "next/navigation";
 import LoginModal from "@/app/components/LoginModal";
-import styles from "./styles/home.module.css";
 
 export default function Home() {
     const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     return (
-        <div className={styles.container}>
+        <div
+            style={{
+                minHeight: "100vh",
+                background: "linear-gradient(to bottom, #ffffff, #f5f7fa)",
+            }}
+        >
             {/* Hero Section */}
-            <section className={styles.heroSection}>
-                <div className="container">
+            <section
+                className="section"
+                style={{ position: "relative", overflow: "hidden" }}
+            >
+                <div
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                            "linear-gradient(to right, #1e88e5, #7c3aed)",
+                        opacity: 0.05,
+                    }}
+                ></div>
+                <div
+                    className="container"
+                    style={{ position: "relative", zIndex: 10 }}
+                >
                     <div style={{ textAlign: "center" }}>
-                        <h1 className={styles.heroTitle}>방구석 대법관</h1>
-                        <p className={styles.heroSubtitle}>
+                        <h1
+                            style={{
+                                fontSize: "clamp(48px, 6vw, 64px)",
+                                fontWeight: 700,
+                                marginBottom: "var(--spacing-xl)",
+                                background:
+                                    "linear-gradient(to right, #1e88e5, #7c3aed)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
+                            }}
+                        >
+                            방구석 대법관
+                        </h1>
+                        <p
+                            style={{
+                                fontSize: "20px",
+                                color: "var(--text-secondary)",
+                                marginBottom: "var(--spacing-3xl)",
+                                maxWidth: "600px",
+                                margin: "0 auto var(--spacing-3xl)",
+                            }}
+                        >
                             플레이 판정을 받고, 실력을 향상시키세요.
                             <br />
                             커뮤니티와 함께 성장하는 리그 오브 레전드 플랫폼
                         </p>
 
-                        <div className={styles.heroButtons}>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "var(--spacing-xl)",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                            }}
+                        >
                             <button
                                 onClick={() => {
                                     requireAuth(
@@ -32,13 +81,33 @@ export default function Home() {
                                         setShowLoginModal
                                     );
                                 }}
-                                className={`btn btn-primary ${styles.heroButton} ${styles.heroPrimaryButton}`}
+                                className="btn btn-primary"
+                                style={{
+                                    padding: "0 var(--spacing-2xl)",
+                                    height: "52px",
+                                    fontSize: "16px",
+                                    borderRadius: "9999px",
+                                    boxShadow: "var(--shadow-lg)",
+                                    transform: "scale(1)",
+                                    transition: "all var(--transition-normal)",
+                                }}
                             >
                                 🎮 영상 업로드
                             </button>
                             <Link href="/community">
                                 <button
-                                    className={`btn btn-ghost ${styles.heroButton} ${styles.heroSecondaryButton}`}
+                                    className="btn btn-ghost"
+                                    style={{
+                                        padding: "0 var(--spacing-2xl)",
+                                        height: "52px",
+                                        fontSize: "16px",
+                                        borderRadius: "9999px",
+                                        boxShadow: "var(--shadow-lg)",
+                                        borderWidth: "2px",
+                                        transform: "scale(1)",
+                                        transition:
+                                            "all var(--transition-normal)",
+                                    }}
                                 >
                                     📋 게시판 둘러보기
                                 </button>
@@ -49,34 +118,71 @@ export default function Home() {
             </section>
 
             {/* Features Section */}
-            <div className={`container ${styles.featuresSection}`}>
+            <div className="container section">
                 <div
                     style={{
                         textAlign: "center",
                         marginBottom: "var(--spacing-4xl)",
                     }}
                 >
-                    <h2 className={styles.sectionTitle}>주요 서비스</h2>
-                    <p className={styles.sectionSubtitle}>
-                        당신의 실력 향상을 위한 최고의 도구
-                    </p>
+                    <h2>주요 서비스</h2>
+                    <p>당신의 실력 향상을 위한 최고의 도구</p>
                 </div>
 
-                <div className={styles.featuresGrid}>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns:
+                            "repeat(auto-fit, minmax(300px, 1fr))",
+                        gap: "var(--spacing-2xl)",
+                    }}
+                >
                     <Link
                         href="/community"
                         style={{ textDecoration: "none", color: "inherit" }}
                     >
-                        <div className={`card ${styles.featureCard}`}>
-                            <div className={styles.featureIcon}>📹</div>
-                            <h3 className={styles.featureTitle}>문철 게시판</h3>
-                            <p className={styles.featureDescription}>
+                        <div
+                            className="card"
+                            style={{
+                                padding: "var(--spacing-2xl)",
+                                borderRadius: "var(--radius-lg)",
+                                border: "1px solid var(--neutral-100)",
+                                transition: "all var(--transition-normal)",
+                                cursor: "pointer",
+                                height: "100%",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: "64px",
+                                    height: "64px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "rgba(30, 136, 229, 0.1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginBottom: "var(--spacing-xl)",
+                                    fontSize: "32px",
+                                }}
+                            >
+                                📹
+                            </div>
+                            <h3 style={{ marginBottom: "var(--spacing-lg)" }}>
+                                문철 게시판
+                            </h3>
+                            <p
+                                style={{
+                                    marginBottom: "var(--spacing-xl)",
+                                    lineHeight: "1.6",
+                                }}
+                            >
                                 플레이 영상을 업로드하고 커뮤니티의 전문적인
                                 판정을 받아보세요. 실시간 피드백으로 빠르게
                                 성장할 수 있습니다.
                             </p>
                             <button
-                                className={`btn btn-accent ${styles.lolCommunityButton}`}
+                                className="btn btn-accent"
+                                style={{ width: "100%" }}
                             >
                                 게시판 가기 →
                             </button>
@@ -87,15 +193,47 @@ export default function Home() {
                         href="/mentor"
                         style={{ textDecoration: "none", color: "inherit" }}
                     >
-                        <div className={`card ${styles.featureCard}`}>
-                            <div className={styles.featureIcon}>🎯</div>
-                            <h3 className={styles.featureTitle}>멘토 매칭</h3>
-                            <p className={styles.featureDescription}>
+                        <div
+                            className="card"
+                            style={{
+                                padding: "var(--spacing-2xl)",
+                                borderRadius: "var(--radius-lg)",
+                                border: "1px solid var(--neutral-100)",
+                                transition: "all var(--transition-normal)",
+                                cursor: "pointer",
+                                height: "100%",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: "64px",
+                                    height: "64px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "rgba(124, 58, 237, 0.1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    marginBottom: "var(--spacing-xl)",
+                                    fontSize: "32px",
+                                }}
+                            >
+                                🎯
+                            </div>
+                            <h3 style={{ marginBottom: "var(--spacing-lg)" }}>
+                                멘토 매칭
+                            </h3>
+                            <p
+                                style={{
+                                    marginBottom: "var(--spacing-xl)",
+                                    lineHeight: "1.6",
+                                }}
+                            >
                                 검증된 고수들에게 직접 조언을 구해보세요. 1:1
                                 맞춤형 코칭으로 약점을 극복할 수 있습니다.
                             </p>
                             <button
-                                className={`btn btn-secondary ${styles.lolCommunityButton}`}
+                                className="btn btn-secondary"
+                                style={{ width: "100%" }}
                             >
                                 멘토 찾기 →
                             </button>
@@ -104,19 +242,59 @@ export default function Home() {
                 </div>
 
                 {/* Stats Section */}
-                <div className={styles.statsSection}>
-                    <div className={styles.statsGrid}>
-                        <div className={styles.statCard}>
-                            <h4 className={styles.statNumber}>1,234+</h4>
-                            <p className={styles.statLabel}>활성 유저</p>
+                <div
+                    style={{
+                        marginTop: "var(--spacing-5xl)",
+                        background:
+                            "linear-gradient(to right, var(--neutral-50), var(--neutral-100))",
+                        borderRadius: "var(--radius-lg)",
+                        padding: "var(--spacing-3xl)",
+                    }}
+                >
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                                "repeat(auto-fit, minmax(200px, 1fr))",
+                            gap: "var(--spacing-2xl)",
+                            textAlign: "center",
+                        }}
+                    >
+                        <div>
+                            <h4
+                                style={{
+                                    fontSize: "36px",
+                                    color: "var(--accent)",
+                                    marginBottom: "var(--spacing-sm)",
+                                }}
+                            >
+                                1,234+
+                            </h4>
+                            <p>활성 유저</p>
                         </div>
-                        <div className={styles.statCard}>
-                            <h4 className={styles.statNumber}>567</h4>
-                            <p className={styles.statLabel}>영상 리뷰</p>
+                        <div>
+                            <h4
+                                style={{
+                                    fontSize: "36px",
+                                    color: "var(--secondary)",
+                                    marginBottom: "var(--spacing-sm)",
+                                }}
+                            >
+                                567
+                            </h4>
+                            <p>영상 리뷰</p>
                         </div>
-                        <div className={styles.statCard}>
-                            <h4 className={styles.statNumber}>89%</h4>
-                            <p className={styles.statLabel}>만족도</p>
+                        <div>
+                            <h4
+                                style={{
+                                    fontSize: "36px",
+                                    color: "#10b981",
+                                    marginBottom: "var(--spacing-sm)",
+                                }}
+                            >
+                                89%
+                            </h4>
+                            <p>만족도</p>
                         </div>
                     </div>
                 </div>

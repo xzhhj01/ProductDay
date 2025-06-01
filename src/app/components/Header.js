@@ -5,8 +5,6 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { authService } from "../services/auth/login.service";
 import LoginModal from "./LoginModal";
-import styles from "../styles/header.module.css";
-import { getCurrentUser } from "@/app/utils/auth-check";
 
 export default function Header() {
     const [user, setUser] = useState(null);
@@ -15,20 +13,13 @@ export default function Header() {
     const [showGameDropdown, setShowGameDropdown] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     // 현재 게임 감지
-    const isValorant = pathname.startsWith("/valorant");
-    const currentGame = isValorant ? "valorant" : "lol";
-
-    // 게임별 색상 테마
-    const headerClass = isValorant ? styles.valorantHeader : styles.header;
+    const currentGame = pathname.startsWith("/valorant") ? "valorant" : "lol";
 
     useEffect(() => {
-        const user = getCurrentUser();
-        setUser(user);
+        // Do not load any user data on initial load
+        // Users must login manually
     }, []);
 
     const handleLogout = () => {
@@ -41,7 +32,6 @@ export default function Header() {
     };
 
     const handleGameSwitch = (game) => {
-        setIsDropdownOpen(false);
         setShowGameDropdown(false);
 
         if (game === currentGame) return;
@@ -65,7 +55,7 @@ export default function Header() {
     };
 
     const getGameIcon = (game) => {
-        return game === "valorant" ? "🎯" : "⚔️";
+        return game === "valorant" ? "🔴" : "🔵";
     };
 
     const getGameName = (game) => {
@@ -77,19 +67,14 @@ export default function Header() {
 
         return [
             {
-                href: currentGame === "valorant" ? "/valorant" : "/",
-                icon: "🏠",
-                label: "홈",
-            },
-            {
                 href: `${basePrefix}/community`,
-                icon: "💬",
-                label: "커뮤니티",
+                icon: "📹",
+                label: "문철 게시판",
             },
             {
                 href: "/mentor",
                 icon: "🎯",
-                label: "멘토",
+                label: "멘토 매칭",
             },
             {
                 href: `${basePrefix}/profile`,
@@ -99,376 +84,662 @@ export default function Header() {
         ];
     };
 
-    // 스마트 라우팅 - 현재 페이지에 맞는 경로로 이동
-    const getSmartRoute = (targetGame) => {
-        if (pathname === "/" || pathname === "/valorant") {
-            return targetGame === "valorant" ? "/valorant" : "/";
-        }
-        if (pathname.includes("/community")) {
-            return targetGame === "valorant"
-                ? "/valorant/community"
-                : "/community";
-        }
-        if (pathname.includes("/profile")) {
-            return targetGame === "valorant" ? "/valorant/profile" : "/profile";
-        }
-        // 기본값
-        return targetGame === "valorant" ? "/valorant" : "/";
-    };
-
-    const isActiveLink = (href) => {
-        if (href === "/" && pathname === "/") return true;
-        if (href === "/valorant" && pathname === "/valorant") return true;
-        if (href !== "/" && href !== "/valorant" && pathname.startsWith(href))
-            return true;
-        return false;
-    };
-
     return (
         <>
-            <header className={headerClass}>
+            <header
+                style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.98)",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)",
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1000,
+                    borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+                    backdropFilter: "blur(20px)",
+                    WebkitBackdropFilter: "blur(20px)",
+                }}
+            >
                 <div className="container">
-                    <div className={styles.headerContainer}>
-                        <div className={styles.leftSection}>
-                            {/* Logo */}
-                            <Link
-                                href={
-                                    currentGame === "valorant"
-                                        ? "/valorant"
-                                        : "/"
-                                }
-                                className={`${styles.logo} ${
-                                    isValorant ? styles.valorantLogo : ""
-                                }`}
-                            >
-                                <div className={styles.logoIcon}>
-                                    {currentGame === "valorant" ? "🎯" : "⚔️"}
-                                </div>
-                                방구석대법관
-                            </Link>
-
-                            {/* Game Selector */}
-                            <div className={styles.gameSelector}>
-                                <button
-                                    onClick={() =>
-                                        setIsDropdownOpen(!isDropdownOpen)
-                                    }
-                                    className={`${styles.currentGame} ${
-                                        isValorant
-                                            ? styles.valorantCurrentGame
-                                            : ""
-                                    }`}
-                                >
-                                    <span className={styles.gameIcon}>
-                                        {currentGame === "valorant"
-                                            ? "🎯"
-                                            : "⚔️"}
-                                    </span>
-                                    <span>{getGameName(currentGame)}</span>
-                                    <span
-                                        className={`${styles.dropdownArrow} ${
-                                            isDropdownOpen
-                                                ? styles.dropdownArrowOpen
-                                                : ""
-                                        }`}
-                                    >
-                                        ▼
-                                    </span>
-                                </button>
-
-                                {isDropdownOpen && (
-                                    <div className={styles.gameDropdown}>
-                                        <button
-                                            onClick={() =>
-                                                handleGameSwitch("lol")
-                                            }
-                                            className={`${styles.gameOption} ${
-                                                currentGame === "lol"
-                                                    ? styles.gameOptionActive
-                                                    : ""
-                                            }`}
-                                        >
-                                            <span className={styles.gameIcon}>
-                                                ⚔️
-                                            </span>
-                                            리그 오브 레전드
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleGameSwitch("valorant")
-                                            }
-                                            className={`${styles.gameOption} ${
-                                                currentGame === "valorant"
-                                                    ? isValorant
-                                                        ? styles.valorantGameOptionActive
-                                                        : styles.gameOptionActive
-                                                    : ""
-                                            }`}
-                                        >
-                                            <span className={styles.gameIcon}>
-                                                🎯
-                                            </span>
-                                            발로란트
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Mobile Game Toggle */}
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            height: "64px",
+                        }}
+                    >
+                        {/* Logo */}
+                        <Link
+                            href={
+                                currentGame === "valorant" ? "/valorant" : "/"
+                            }
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "var(--spacing-sm)",
+                                textDecoration: "none",
+                                transition: "transform var(--transition-fast)",
+                            }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.transform =
+                                    "scale(1.05)")
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.transform = "scale(1)")
+                            }
+                        >
                             <div
-                                className={`${styles.mobileGameToggle} ${
-                                    isValorant
-                                        ? styles.valorantMobileGameToggle
-                                        : ""
-                                }`}
-                            >
-                                <span>
-                                    {currentGame === "valorant" ? "🎯" : "⚔️"}
-                                </span>
-                                <div
-                                    className={`${styles.toggleSwitch} ${
-                                        isValorant
-                                            ? styles.valorantToggleSwitch
-                                            : ""
-                                    } ${
+                                style={{
+                                    width: "32px",
+                                    height: "32px",
+                                    background:
                                         currentGame === "valorant"
-                                            ? isValorant
-                                                ? styles.valorantToggleSwitchActive
-                                                : styles.toggleSwitchActive
-                                            : ""
-                                    }`}
-                                    onClick={() =>
-                                        handleGameSwitch(
-                                            currentGame === "valorant"
-                                                ? "lol"
-                                                : "valorant"
-                                        )
-                                    }
+                                            ? "linear-gradient(135deg, #ff4655 0%, #0f1419 100%)"
+                                            : "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                                    borderRadius: "8px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12)",
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        color: "white",
+                                        fontWeight: 700,
+                                        fontSize: "16px",
+                                    }}
                                 >
-                                    <div
-                                        className={`${styles.toggleHandle} ${
-                                            isValorant
-                                                ? styles.valorantToggleHandle
-                                                : ""
-                                        } ${
-                                            currentGame === "valorant"
-                                                ? isValorant
-                                                    ? styles.valorantToggleHandleActive
-                                                    : styles.toggleHandleActive
-                                                : ""
-                                        }`}
-                                    ></div>
-                                </div>
+                                    {currentGame === "valorant" ? "V" : "LV"}
+                                </span>
                             </div>
+                            <span
+                                style={{
+                                    fontSize: "16px",
+                                    fontWeight: 600,
+                                    color: "#1a1a1a",
+                                }}
+                            >
+                                방구석대법관
+                            </span>
+                        </Link>
+
+                        {/* Game Selector */}
+                        <div
+                            style={{ position: "relative" }}
+                            className="hide-mobile"
+                        >
+                            <button
+                                onClick={() =>
+                                    setShowGameDropdown(!showGameDropdown)
+                                }
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "var(--spacing-sm)",
+                                    padding:
+                                        "var(--spacing-sm) var(--spacing-lg)",
+                                    backgroundColor: "rgba(0, 0, 0, 0.04)",
+                                    border: "1px solid rgba(0, 0, 0, 0.08)",
+                                    borderRadius: "var(--radius-lg)",
+                                    cursor: "pointer",
+                                    transition: "all var(--transition-normal)",
+                                    fontSize: "14px",
+                                    fontWeight: 500,
+                                    color: "var(--text-primary)",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor =
+                                        "rgba(0, 0, 0, 0.06)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor =
+                                        "rgba(0, 0, 0, 0.04)";
+                                }}
+                            >
+                                <span>{getGameIcon(currentGame)}</span>
+                                <span>{getGameName(currentGame)}</span>
+                                <span
+                                    style={{
+                                        transform: showGameDropdown
+                                            ? "rotate(180deg)"
+                                            : "rotate(0deg)",
+                                        transition:
+                                            "transform var(--transition-normal)",
+                                    }}
+                                >
+                                    ▼
+                                </span>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {showGameDropdown && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        top: "100%",
+                                        left: 0,
+                                        right: 0,
+                                        marginTop: "var(--spacing-xs)",
+                                        backgroundColor: "white",
+                                        border: "1px solid rgba(0, 0, 0, 0.08)",
+                                        borderRadius: "var(--radius-lg)",
+                                        boxShadow:
+                                            "0 4px 12px rgba(0, 0, 0, 0.15)",
+                                        overflow: "hidden",
+                                        zIndex: 1001,
+                                    }}
+                                >
+                                    <button
+                                        onClick={() => handleGameSwitch("lol")}
+                                        style={{
+                                            width: "100%",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "var(--spacing-sm)",
+                                            padding:
+                                                "var(--spacing-md) var(--spacing-lg)",
+                                            backgroundColor:
+                                                currentGame === "lol"
+                                                    ? "rgba(79, 70, 229, 0.1)"
+                                                    : "transparent",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontWeight: 500,
+                                            color:
+                                                currentGame === "lol"
+                                                    ? "#4f46e5"
+                                                    : "var(--text-primary)",
+                                            transition:
+                                                "all var(--transition-normal)",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (currentGame !== "lol") {
+                                                e.currentTarget.style.backgroundColor =
+                                                    "rgba(0, 0, 0, 0.04)";
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (currentGame !== "lol") {
+                                                e.currentTarget.style.backgroundColor =
+                                                    "transparent";
+                                            }
+                                        }}
+                                    >
+                                        <span>🔵</span>
+                                        <span>리그 오브 레전드</span>
+                                        {currentGame === "lol" && (
+                                            <span
+                                                style={{ marginLeft: "auto" }}
+                                            >
+                                                ✓
+                                            </span>
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            handleGameSwitch("valorant")
+                                        }
+                                        style={{
+                                            width: "100%",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "var(--spacing-sm)",
+                                            padding:
+                                                "var(--spacing-md) var(--spacing-lg)",
+                                            backgroundColor:
+                                                currentGame === "valorant"
+                                                    ? "rgba(255, 70, 85, 0.1)"
+                                                    : "transparent",
+                                            border: "none",
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontWeight: 500,
+                                            color:
+                                                currentGame === "valorant"
+                                                    ? "#ff4655"
+                                                    : "var(--text-primary)",
+                                            transition:
+                                                "all var(--transition-normal)",
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (currentGame !== "valorant") {
+                                                e.currentTarget.style.backgroundColor =
+                                                    "rgba(0, 0, 0, 0.04)";
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (currentGame !== "valorant") {
+                                                e.currentTarget.style.backgroundColor =
+                                                    "transparent";
+                                            }
+                                        }}
+                                    >
+                                        <span>🔴</span>
+                                        <span>발로란트</span>
+                                        {currentGame === "valorant" && (
+                                            <span
+                                                style={{ marginLeft: "auto" }}
+                                            >
+                                                ✓
+                                            </span>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Desktop Navigation */}
-                        <nav className={styles.navigation}>
+                        <nav
+                            className="hide-mobile"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "var(--spacing-2xl)",
+                            }}
+                        >
                             {getNavigationLinks().map((link) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className={`${styles.navLink} ${
-                                        isValorant ? styles.valorantNavLink : ""
-                                    } ${
-                                        isActiveLink(link.href)
-                                            ? isValorant
-                                                ? styles.valorantNavLinkActive
-                                                : styles.navLinkActive
-                                            : ""
-                                    }`}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "8px",
+                                        color: "#6b7280",
+                                        fontWeight: 500,
+                                        textDecoration: "none",
+                                        transition: "all 0.15s ease",
+                                        padding: "6px 12px",
+                                        borderRadius: "6px",
+                                        position: "relative",
+                                        fontSize: "14px",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.color =
+                                            currentGame === "valorant"
+                                                ? "#ff4655"
+                                                : "#4f46e5";
+                                        e.currentTarget.style.backgroundColor =
+                                            currentGame === "valorant"
+                                                ? "rgba(255, 70, 85, 0.06)"
+                                                : "rgba(79, 70, 229, 0.06)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.color = "#6b7280";
+                                        e.currentTarget.style.backgroundColor =
+                                            "transparent";
+                                    }}
                                 >
-                                    <span className={styles.navIcon}>
-                                        {link.icon}
-                                    </span>
-                                    {link.label}
+                                    <span>{link.icon}</span>
+                                    <span>{link.label}</span>
                                 </Link>
                             ))}
                         </nav>
 
                         {/* User Actions */}
-                        <div className={styles.rightSection}>
+                        <div
+                            className="hide-mobile"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "var(--spacing-lg)",
+                            }}
+                        >
                             {user ? (
-                                <div className={styles.userMenu}>
-                                    <button
-                                        onClick={() =>
-                                            setIsUserMenuOpen(!isUserMenuOpen)
-                                        }
-                                        className={`${styles.userButton} ${
-                                            isValorant
-                                                ? styles.valorantUserButton
-                                                : ""
-                                        }`}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "var(--spacing-lg)",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "var(--spacing-sm)",
+                                        }}
                                     >
                                         <div
-                                            className={`${styles.userAvatar} ${
-                                                isValorant
-                                                    ? styles.valorantUserAvatar
-                                                    : ""
-                                            }`}
+                                            style={{
+                                                width: "32px",
+                                                height: "32px",
+                                                background:
+                                                    currentGame === "valorant"
+                                                        ? "linear-gradient(135deg, #ff4655, #0f1419)"
+                                                        : "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                                                borderRadius: "50%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                boxShadow:
+                                                    "0 2px 4px rgba(0, 0, 0, 0.1)",
+                                            }}
                                         >
-                                            {(
-                                                user.summonerName ||
-                                                user.name ||
-                                                ""
-                                            )
-                                                .charAt(0)
-                                                .toUpperCase()}
+                                            <span
+                                                style={{
+                                                    color: "white",
+                                                    fontSize: "14px",
+                                                    fontWeight: 700,
+                                                }}
+                                            >
+                                                {(
+                                                    user.summonerName ||
+                                                    user.name ||
+                                                    ""
+                                                )
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                            </span>
                                         </div>
-                                        <span>
+                                        <span
+                                            style={{
+                                                color: "var(--color-text-primary)",
+                                                fontWeight: 500,
+                                            }}
+                                        >
                                             {user.summonerName || user.name}
                                         </span>
-                                        <span
-                                            className={`${
-                                                styles.dropdownArrow
-                                            } ${
-                                                isUserMenuOpen
-                                                    ? styles.dropdownArrowOpen
-                                                    : ""
-                                            }`}
-                                        >
-                                            ▼
-                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={handleLogout}
+                                        className="btn btn-ghost"
+                                        style={{
+                                            padding: "0 var(--spacing-md)",
+                                            fontSize: "14px",
+                                            height: "36px",
+                                        }}
+                                    >
+                                        로그아웃
                                     </button>
-
-                                    {isUserMenuOpen && (
-                                        <div className={styles.userDropdown}>
-                                            <Link
-                                                href={
-                                                    currentGame === "valorant"
-                                                        ? "/valorant/profile"
-                                                        : "/profile"
-                                                }
-                                                className={
-                                                    styles.userDropdownItem
-                                                }
-                                            >
-                                                <span>👤</span>
-                                                프로필
-                                            </Link>
-                                            <div
-                                                className={
-                                                    styles.userDropdownDivider
-                                                }
-                                            ></div>
-                                            <button
-                                                className={
-                                                    styles.userDropdownItem
-                                                }
-                                                onClick={handleLogout}
-                                            >
-                                                <span>🚪</span>
-                                                로그아웃
-                                            </button>
-                                        </div>
-                                    )}
                                 </div>
                             ) : (
-                                <div className={styles.authButtons}>
-                                    <button
-                                        className={`${styles.loginButton} ${
-                                            isValorant
-                                                ? styles.valorantLoginButton
-                                                : ""
-                                        }`}
-                                        onClick={() => setShowLoginModal(true)}
-                                    >
-                                        로그인
-                                    </button>
-                                    <button
-                                        className={`${styles.signupButton} ${
-                                            isValorant
-                                                ? styles.valorantSignupButton
-                                                : ""
-                                        }`}
-                                    >
-                                        회원가입
-                                    </button>
-                                </div>
+                                <button
+                                    onClick={() => setShowLoginModal(true)}
+                                    style={{
+                                        borderRadius: "20px",
+                                        boxShadow:
+                                            "0 1px 2px rgba(0, 0, 0, 0.05)",
+                                        padding: "0 20px",
+                                        height: "36px",
+                                        fontSize: "14px",
+                                        fontWeight: 500,
+                                        background:
+                                            currentGame === "valorant"
+                                                ? "linear-gradient(135deg, #ff4655 0%, #0f1419 100%)"
+                                                : "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                                        color: "white",
+                                        border: "none",
+                                        cursor: "pointer",
+                                        transition:
+                                            "all var(--transition-normal)",
+                                    }}
+                                    onMouseEnter={(e) =>
+                                        (e.currentTarget.style.transform =
+                                            "translateY(-1px)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                        (e.currentTarget.style.transform =
+                                            "translateY(0)")
+                                    }
+                                >
+                                    로그인
+                                </button>
                             )}
-
-                            {/* Mobile Menu Button */}
-                            <button
-                                onClick={() =>
-                                    setIsMobileMenuOpen(!isMobileMenuOpen)
-                                }
-                                className={`${styles.mobileMenuButton} ${
-                                    isValorant
-                                        ? styles.valorantMobileMenuButton
-                                        : ""
-                                }`}
-                            >
-                                ☰
-                            </button>
                         </div>
+
+                        {/* Mobile Menu Button */}
+                        <button
+                            className="show-mobile"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            style={{
+                                background: "none",
+                                border: "none",
+                                fontSize: "20px",
+                                cursor: "pointer",
+                                padding: "8px",
+                                borderRadius: "6px",
+                                transition: "background-color 0.15s ease",
+                            }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                    "rgba(0, 0, 0, 0.05)")
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor =
+                                    "transparent")
+                            }
+                        >
+                            ☰
+                        </button>
                     </div>
                 </div>
 
                 {/* Mobile Menu */}
-                {isMobileMenuOpen && (
+                {isMenuOpen && (
                     <div
-                        className={`${styles.mobileMenu} ${
-                            isValorant ? styles.valorantMobileMenu : ""
-                        }`}
+                        className="show-mobile"
+                        style={{
+                            backgroundColor: "white",
+                            borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+                            padding: "var(--spacing-lg) 0",
+                        }}
                     >
-                        <nav className={styles.mobileNavigation}>
-                            {getNavigationLinks().map((link) => (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={`${styles.mobileNavLink} ${
-                                        isValorant
-                                            ? styles.valorantMobileNavLink
-                                            : ""
-                                    } ${
-                                        isActiveLink(link.href)
-                                            ? isValorant
-                                                ? styles.valorantMobileNavLinkActive
-                                                : styles.mobileNavLinkActive
-                                            : ""
-                                    }`}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                >
-                                    <span className={styles.mobileNavIcon}>
-                                        {link.icon}
-                                    </span>
-                                    {link.label}
-                                </Link>
-                            ))}
-                        </nav>
-
-                        {!user && (
-                            <div
-                                className={`${styles.mobileAuthButtons} ${
-                                    isValorant
-                                        ? styles.valorantMobileAuthButtons
-                                        : ""
-                                }`}
-                            >
-                                <button
-                                    className={`${styles.loginButton} ${
-                                        isValorant
-                                            ? styles.valorantLoginButton
-                                            : ""
-                                    }`}
-                                    onClick={() => {
-                                        setShowLoginModal(true);
-                                        setIsMobileMenuOpen(false);
+                        <div className="container">
+                            {/* Mobile Game Selector */}
+                            <div style={{ marginBottom: "var(--spacing-lg)" }}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "var(--spacing-sm)",
+                                        padding: "var(--spacing-sm)",
+                                        backgroundColor: "rgba(0, 0, 0, 0.04)",
+                                        borderRadius: "var(--radius-lg)",
                                     }}
                                 >
-                                    로그인
-                                </button>
-                                <button
-                                    className={`${styles.signupButton} ${
-                                        isValorant
-                                            ? styles.valorantSignupButton
-                                            : ""
-                                    }`}
-                                >
-                                    회원가입
-                                </button>
+                                    <button
+                                        onClick={() => handleGameSwitch("lol")}
+                                        style={{
+                                            flex: 1,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            gap: "var(--spacing-xs)",
+                                            padding: "var(--spacing-sm)",
+                                            backgroundColor:
+                                                currentGame === "lol"
+                                                    ? "white"
+                                                    : "transparent",
+                                            border: "none",
+                                            borderRadius: "var(--radius-md)",
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontWeight: 500,
+                                            color:
+                                                currentGame === "lol"
+                                                    ? "#4f46e5"
+                                                    : "var(--text-secondary)",
+                                            boxShadow:
+                                                currentGame === "lol"
+                                                    ? "0 1px 3px rgba(0, 0, 0, 0.1)"
+                                                    : "none",
+                                            transition:
+                                                "all var(--transition-normal)",
+                                        }}
+                                    >
+                                        <span>🔵</span>
+                                        <span>롤</span>
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            handleGameSwitch("valorant")
+                                        }
+                                        style={{
+                                            flex: 1,
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            gap: "var(--spacing-xs)",
+                                            padding: "var(--spacing-sm)",
+                                            backgroundColor:
+                                                currentGame === "valorant"
+                                                    ? "white"
+                                                    : "transparent",
+                                            border: "none",
+                                            borderRadius: "var(--radius-md)",
+                                            cursor: "pointer",
+                                            fontSize: "14px",
+                                            fontWeight: 500,
+                                            color:
+                                                currentGame === "valorant"
+                                                    ? "#ff4655"
+                                                    : "var(--text-secondary)",
+                                            boxShadow:
+                                                currentGame === "valorant"
+                                                    ? "0 1px 3px rgba(0, 0, 0, 0.1)"
+                                                    : "none",
+                                            transition:
+                                                "all var(--transition-normal)",
+                                        }}
+                                    >
+                                        <span>🔴</span>
+                                        <span>발로란트</span>
+                                    </button>
+                                </div>
                             </div>
-                        )}
+
+                            {/* Mobile Navigation */}
+                            <nav
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "var(--spacing-sm)",
+                                }}
+                            >
+                                {getNavigationLinks().map((link) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "var(--spacing-sm)",
+                                            padding: "var(--spacing-md)",
+                                            color: "var(--text-primary)",
+                                            textDecoration: "none",
+                                            borderRadius: "var(--radius-md)",
+                                            transition:
+                                                "background-color var(--transition-normal)",
+                                        }}
+                                        onClick={() => setIsMenuOpen(false)}
+                                        onTouchStart={(e) =>
+                                            (e.currentTarget.style.backgroundColor =
+                                                "rgba(0, 0, 0, 0.04)")
+                                        }
+                                        onTouchEnd={(e) =>
+                                            (e.currentTarget.style.backgroundColor =
+                                                "transparent")
+                                        }
+                                    >
+                                        <span>{link.icon}</span>
+                                        <span>{link.label}</span>
+                                    </Link>
+                                ))}
+                            </nav>
+
+                            {/* Mobile User Actions */}
+                            <div
+                                style={{
+                                    marginTop: "var(--spacing-lg)",
+                                    paddingTop: "var(--spacing-lg)",
+                                    borderTop: "1px solid rgba(0, 0, 0, 0.06)",
+                                }}
+                            >
+                                {user ? (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "var(--spacing-md)",
+                                        }}
+                                    >
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "var(--spacing-sm)",
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    width: "32px",
+                                                    height: "32px",
+                                                    background:
+                                                        currentGame ===
+                                                        "valorant"
+                                                            ? "linear-gradient(135deg, #ff4655, #0f1419)"
+                                                            : "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                                                    borderRadius: "50%",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        color: "white",
+                                                        fontSize: "14px",
+                                                        fontWeight: 700,
+                                                    }}
+                                                >
+                                                    {(
+                                                        user.summonerName ||
+                                                        user.name ||
+                                                        ""
+                                                    )
+                                                        .charAt(0)
+                                                        .toUpperCase()}
+                                                </span>
+                                            </div>
+                                            <span style={{ fontWeight: 500 }}>
+                                                {user.summonerName || user.name}
+                                            </span>
+                                        </div>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="btn btn-ghost"
+                                            style={{
+                                                width: "100%",
+                                                justifyContent: "center",
+                                            }}
+                                        >
+                                            로그아웃
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            setShowLoginModal(true);
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className="btn btn-primary"
+                                        style={{
+                                            width: "100%",
+                                            justifyContent: "center",
+                                            background:
+                                                currentGame === "valorant"
+                                                    ? "linear-gradient(135deg, #ff4655 0%, #0f1419 100%)"
+                                                    : "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                                        }}
+                                    >
+                                        로그인
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
             </header>

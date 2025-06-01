@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { getCurrentUser } from "../../utils/auth-check";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import styles from "../../styles/profile.module.css";
 
 export default function ProfilePage() {
     const [user, setUser] = useState(null);
@@ -22,9 +21,32 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className={styles.loadingContainer}>
-                <div className={`card ${styles.loadingCard}`}>
-                    <div className={styles.loadingIcon}>⏳</div>
+            <div
+                style={{
+                    minHeight: "100vh",
+                    background:
+                        "linear-gradient(to bottom right, var(--neutral-50), rgba(30, 136, 229, 0.05))",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <div
+                    className="card"
+                    style={{
+                        borderRadius: "var(--radius-lg)",
+                        padding: "var(--spacing-3xl)",
+                        textAlign: "center",
+                    }}
+                >
+                    <div
+                        style={{
+                            fontSize: "48px",
+                            marginBottom: "var(--spacing-lg)",
+                        }}
+                    >
+                        ⏳
+                    </div>
                     <p>로딩 중...</p>
                 </div>
             </div>
@@ -54,32 +76,92 @@ export default function ProfilePage() {
     };
 
     return (
-        <div className={styles.container}>
+        <div
+            style={{
+                minHeight: "100vh",
+                background:
+                    "linear-gradient(to bottom right, var(--neutral-50), rgba(30, 136, 229, 0.05))",
+            }}
+        >
             {/* Profile Header */}
-            <div className={styles.profileHeader}>
-                <div className={`container ${styles.profileHeaderContainer}`}>
-                    <div className={styles.profileHeaderContent}>
+            <div
+                style={{
+                    backgroundColor: "var(--surface)",
+                    boxShadow: "var(--shadow-lg)",
+                }}
+            >
+                <div
+                    className="container"
+                    style={{
+                        paddingTop: "var(--spacing-2xl)",
+                        paddingBottom: "var(--spacing-2xl)",
+                    }}
+                >
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "var(--spacing-2xl)",
+                            flexWrap: "wrap",
+                        }}
+                    >
                         {/* Profile Avatar */}
-                        <div className={styles.avatarContainer}>
+                        <div style={{ position: "relative" }}>
                             <div
-                                className={styles.avatar}
                                 style={{
+                                    width: "128px",
+                                    height: "128px",
                                     background: `linear-gradient(to right, ${getTierGradient(
                                         getCurrentTier()
-                                    )})`,
+                                    )}})`,
+                                    borderRadius: "50%",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    boxShadow: "var(--shadow-lg)",
                                 }}
                             >
-                                <span className={styles.avatarText}>
+                                <span
+                                    style={{
+                                        fontSize: "48px",
+                                        fontWeight: 700,
+                                        color: "white",
+                                    }}
+                                >
                                     {(user.username || "")
                                         .charAt(0)
                                         .toUpperCase()}
                                 </span>
                             </div>
-                            <div className={styles.statusBadge}>
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    bottom: "-8px",
+                                    right: "-8px",
+                                    backgroundColor: "var(--surface)",
+                                    borderRadius: "50%",
+                                    padding: "4px",
+                                    boxShadow: "var(--shadow-lg)",
+                                }}
+                            >
                                 <div
-                                    className={`${styles.statusIcon} ${styles.lolStatusIcon}`}
+                                    style={{
+                                        width: "40px",
+                                        height: "40px",
+                                        background:
+                                            "linear-gradient(to right, #34d399, #10b981)",
+                                        borderRadius: "50%",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }}
                                 >
-                                    <span className={styles.statusIconText}>
+                                    <span
+                                        style={{
+                                            color: "white",
+                                            fontSize: "14px",
+                                        }}
+                                    >
                                         ✓
                                     </span>
                                 </div>
@@ -87,47 +169,100 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Profile Info */}
-                        <div className={styles.profileInfo}>
-                            <h1 className={styles.profileTitle}>
+                        <div style={{ flex: 1 }}>
+                            <h1 style={{ marginBottom: "var(--spacing-sm)" }}>
                                 {user.username}
                             </h1>
-                            <div className={styles.profileMeta}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "var(--spacing-lg)",
+                                    flexWrap: "wrap",
+                                    marginBottom: "var(--spacing-md)",
+                                }}
+                            >
                                 {getCurrentTier() && (
                                     <span
-                                        className={styles.tierBadge}
                                         style={{
+                                            padding:
+                                                "var(--spacing-sm) var(--spacing-lg)",
+                                            borderRadius: "9999px",
                                             background: `linear-gradient(to right, ${getTierGradient(
                                                 getCurrentTier()
-                                            )})`,
+                                            )}})`,
+                                            color: "white",
+                                            fontWeight: 600,
+                                            boxShadow: "var(--shadow-md)",
                                         }}
                                     >
                                         {getCurrentTier()}
                                     </span>
                                 )}
-                                <span className={styles.metaItem}>
+                                <span
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "var(--spacing-xs)",
+                                        color: "var(--text-secondary)",
+                                    }}
+                                >
                                     <span>🌍</span>
                                     <span>KR 서버</span>
                                 </span>
                             </div>
 
-                            <div className={styles.gameSelector}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: "var(--spacing-sm)",
+                                }}
+                            >
                                 <button
                                     onClick={() => setSelectedGame("valorant")}
-                                    className={`${styles.gameButton} ${
-                                        selectedGame === "valorant"
-                                            ? `${styles.gameButtonActive} ${styles.valorantGameButton}`
-                                            : styles.gameButtonInactive
-                                    }`}
+                                    style={{
+                                        padding:
+                                            "var(--spacing-sm) var(--spacing-md)",
+                                        border: "none",
+                                        borderRadius: "var(--radius-md)",
+                                        background:
+                                            selectedGame === "valorant"
+                                                ? "linear-gradient(135deg, #ff4655 0%, #0f1419 100%)"
+                                                : "var(--neutral-100)",
+                                        color:
+                                            selectedGame === "valorant"
+                                                ? "white"
+                                                : "var(--text-secondary)",
+                                        cursor: "pointer",
+                                        fontSize: "14px",
+                                        fontWeight: 500,
+                                        transition:
+                                            "all var(--transition-normal)",
+                                    }}
                                 >
                                     🎯 발로란트
                                 </button>
                                 <button
                                     onClick={() => setSelectedGame("lol")}
-                                    className={`${styles.gameButton} ${
-                                        selectedGame === "lol"
-                                            ? `${styles.gameButtonActive} ${styles.lolGameButton}`
-                                            : styles.gameButtonInactive
-                                    }`}
+                                    style={{
+                                        padding:
+                                            "var(--spacing-sm) var(--spacing-md)",
+                                        border: "none",
+                                        borderRadius: "var(--radius-md)",
+                                        background:
+                                            selectedGame === "lol"
+                                                ? "linear-gradient(135deg, #1e88e5 0%, #3b82f6 100%)"
+                                                : "var(--neutral-100)",
+                                        color:
+                                            selectedGame === "lol"
+                                                ? "white"
+                                                : "var(--text-secondary)",
+                                        cursor: "pointer",
+                                        fontSize: "14px",
+                                        fontWeight: 500,
+                                        transition:
+                                            "all var(--transition-normal)",
+                                    }}
                                 >
                                     ⚔️ 리그 오브 레전드
                                 </button>
@@ -135,14 +270,21 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className={styles.actionButtons}>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "var(--spacing-lg)",
+                            }}
+                        >
                             <button
-                                className={`btn btn-ghost ${styles.editButton}`}
+                                className="btn btn-ghost"
+                                style={{ borderRadius: "9999px" }}
                             >
                                 프로필 편집
                             </button>
                             <button
-                                className={`btn btn-primary ${styles.addFriendButton}`}
+                                className="btn btn-primary"
+                                style={{ borderRadius: "9999px" }}
                             >
                                 친구 추가
                             </button>
@@ -152,9 +294,23 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Content */}
-            <div className={`container ${styles.contentContainer}`}>
+            <div
+                className="container"
+                style={{
+                    paddingTop: "var(--spacing-2xl)",
+                    paddingBottom: "var(--spacing-2xl)",
+                }}
+            >
                 {/* Tab Navigation */}
-                <div className={styles.tabNavigation}>
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "var(--spacing-lg)",
+                        marginBottom: "var(--spacing-2xl)",
+                        borderBottom: "1px solid var(--neutral-200)",
+                        paddingBottom: "var(--spacing-lg)",
+                    }}
+                >
                     {[
                         { id: "overview", label: "개요", icon: "📊" },
                         { id: "stats", label: "통계", icon: "📈" },
@@ -164,13 +320,26 @@ export default function ProfilePage() {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`${styles.tabButton} ${
-                                activeTab === tab.id
-                                    ? `${styles.tabButtonActive} ${styles.lolTabActive}`
-                                    : styles.tabButtonInactive
-                            }`}
+                            style={{
+                                padding: "var(--spacing-md) var(--spacing-lg)",
+                                border: "none",
+                                background:
+                                    activeTab === tab.id
+                                        ? "var(--accent)"
+                                        : "transparent",
+                                color:
+                                    activeTab === tab.id
+                                        ? "white"
+                                        : "var(--text-secondary)",
+                                borderRadius: "var(--radius-lg)",
+                                cursor: "pointer",
+                                transition: "all var(--transition-normal)",
+                                fontWeight: activeTab === tab.id ? 600 : 400,
+                            }}
                         >
-                            <span className={styles.tabIcon}>{tab.icon}</span>
+                            <span style={{ marginRight: "var(--spacing-sm)" }}>
+                                {tab.icon}
+                            </span>
                             {tab.label}
                         </button>
                     ))}
@@ -178,10 +347,27 @@ export default function ProfilePage() {
 
                 {/* Tab Content */}
                 {activeTab === "overview" && (
-                    <div className={styles.overviewGrid}>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                                "repeat(auto-fit, minmax(300px, 1fr))",
+                            gap: "var(--spacing-xl)",
+                        }}
+                    >
                         {/* 선택된 게임 통계 */}
-                        <div className={`card ${styles.statsCard}`}>
-                            <h3 className={styles.cardTitle}>
+                        <div
+                            className="card"
+                            style={{ padding: "var(--spacing-xl)" }}
+                        >
+                            <h3
+                                style={{
+                                    marginBottom: "var(--spacing-lg)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "var(--spacing-sm)",
+                                }}
+                            >
                                 <span>
                                     {selectedGame === "valorant" ? "🎯" : "⚔️"}
                                 </span>
@@ -189,22 +375,38 @@ export default function ProfilePage() {
                                     ? "발로란트 통계"
                                     : "리그 오브 레전드 통계"}
                             </h3>
-                            <div className={styles.statsGrid}>
-                                <div className={styles.statRow}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "var(--spacing-md)",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
                                     <span>랭크:</span>
-                                    <span className={styles.statValue}>
+                                    <span style={{ fontWeight: 600 }}>
                                         {selectedGame === "valorant"
                                             ? user.stats.valorant.rank
                                             : user.stats.lol.rank}
                                     </span>
                                 </div>
-                                <div className={styles.statRow}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
                                     <span>
                                         {selectedGame === "valorant"
                                             ? "RR:"
                                             : "LP:"}
                                     </span>
-                                    <span className={styles.statValue}>
+                                    <span style={{ fontWeight: 600 }}>
                                         {selectedGame === "valorant"
                                             ? user.stats.valorant.rr
                                             : user.stats.lol.lp}
@@ -212,37 +414,61 @@ export default function ProfilePage() {
                                 </div>
                                 {selectedGame === "valorant" ? (
                                     <>
-                                        <div className={styles.statRow}>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                            }}
+                                        >
                                             <span>평균 ACS:</span>
-                                            <span className={styles.statValue}>
+                                            <span style={{ fontWeight: 600 }}>
                                                 {user.stats.valorant.acs}
                                             </span>
                                         </div>
-                                        <div className={styles.statRow}>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                            }}
+                                        >
                                             <span>K/D:</span>
-                                            <span className={styles.statValue}>
+                                            <span style={{ fontWeight: 600 }}>
                                                 {user.stats.valorant.kd}
                                             </span>
                                         </div>
                                     </>
                                 ) : (
-                                    <div className={styles.statRow}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                        }}
+                                    >
                                         <span>KDA:</span>
-                                        <span className={styles.statValue}>
+                                        <span style={{ fontWeight: 600 }}>
                                             {user.stats.lol.kda}
                                         </span>
                                     </div>
                                 )}
-                                <div className={styles.statRow}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
                                     <span>승률:</span>
                                     <span
-                                        className={
-                                            (selectedGame === "valorant"
-                                                ? user.stats.valorant.winRate
-                                                : user.stats.lol.winRate) > 50
-                                                ? styles.winRatePositive
-                                                : styles.winRateNegative
-                                        }
+                                        style={{
+                                            fontWeight: 600,
+                                            color:
+                                                (selectedGame === "valorant"
+                                                    ? user.stats.valorant
+                                                          .winRate
+                                                    : user.stats.lol.winRate) >
+                                                50
+                                                    ? "#10b981"
+                                                    : "#ef4444",
+                                        }}
                                     >
                                         {selectedGame === "valorant"
                                             ? user.stats.valorant.winRate
@@ -254,26 +480,52 @@ export default function ProfilePage() {
                         </div>
 
                         {/* 주요 캐릭터/에이전트 */}
-                        <div className={`card ${styles.statsCard}`}>
-                            <h3 className={styles.cardTitle}>
+                        <div
+                            className="card"
+                            style={{ padding: "var(--spacing-xl)" }}
+                        >
+                            <h3
+                                style={{
+                                    marginBottom: "var(--spacing-lg)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "var(--spacing-sm)",
+                                }}
+                            >
                                 <span>🏆</span>
                                 주요{" "}
                                 {selectedGame === "valorant"
                                     ? "에이전트"
                                     : "챔피언"}
                             </h3>
-                            <div className={styles.characterTags}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexWrap: "wrap",
+                                    gap: "var(--spacing-sm)",
+                                }}
+                            >
                                 {(selectedGame === "valorant"
                                     ? user.mainAgents
                                     : user.mainChampions
                                 ).map((character, index) => (
                                     <span
                                         key={index}
-                                        className={`${styles.characterTag} ${
-                                            selectedGame === "valorant"
-                                                ? styles.valorantCharacterTag
-                                                : styles.lolCharacterTag
-                                        }`}
+                                        style={{
+                                            padding:
+                                                "var(--spacing-sm) var(--spacing-md)",
+                                            background:
+                                                selectedGame === "valorant"
+                                                    ? "linear-gradient(135deg, rgba(255, 70, 85, 0.1) 0%, rgba(15, 20, 25, 0.1) 100%)"
+                                                    : "linear-gradient(135deg, rgba(30, 136, 229, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)",
+                                            borderRadius: "var(--radius-md)",
+                                            fontSize: "14px",
+                                            fontWeight: 500,
+                                            color:
+                                                selectedGame === "valorant"
+                                                    ? "#ff4655"
+                                                    : "#1e88e5",
+                                        }}
                                     >
                                         {character}
                                     </span>
@@ -282,27 +534,58 @@ export default function ProfilePage() {
                         </div>
 
                         {/* 활동 통계 */}
-                        <div className={`card ${styles.statsCard}`}>
-                            <h3 className={styles.cardTitle}>
+                        <div
+                            className="card"
+                            style={{ padding: "var(--spacing-xl)" }}
+                        >
+                            <h3
+                                style={{
+                                    marginBottom: "var(--spacing-lg)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "var(--spacing-sm)",
+                                }}
+                            >
                                 <span>📊</span>
                                 커뮤니티 활동
                             </h3>
-                            <div className={styles.statsGrid}>
-                                <div className={styles.statRow}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "var(--spacing-md)",
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
                                     <span>총 게시물:</span>
-                                    <span className={styles.statValue}>
+                                    <span style={{ fontWeight: 600 }}>
                                         {user.totalPosts}개
                                     </span>
                                 </div>
-                                <div className={styles.statRow}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
                                     <span>받은 투표:</span>
-                                    <span className={styles.statValue}>
+                                    <span style={{ fontWeight: 600 }}>
                                         {user.totalVotes}개
                                     </span>
                                 </div>
-                                <div className={styles.statRow}>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                    }}
+                                >
                                     <span>가입일:</span>
-                                    <span className={styles.statValue}>
+                                    <span style={{ fontWeight: 600 }}>
                                         {user.joinDate}
                                     </span>
                                 </div>
@@ -312,8 +595,18 @@ export default function ProfilePage() {
                 )}
 
                 {activeTab === "matches" && (
-                    <div className={`card ${styles.matchesContainer}`}>
-                        <h3 className={styles.cardTitle}>
+                    <div
+                        className="card"
+                        style={{ padding: "var(--spacing-xl)" }}
+                    >
+                        <h3
+                            style={{
+                                marginBottom: "var(--spacing-lg)",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "var(--spacing-sm)",
+                            }}
+                        >
                             <span>
                                 {selectedGame === "valorant" ? "🎯" : "⚔️"}
                             </span>
@@ -322,36 +615,63 @@ export default function ProfilePage() {
                                 : "리그 오브 레전드"}{" "}
                             최근 경기
                         </h3>
-                        <div className={styles.matchesList}>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "var(--spacing-md)",
+                            }}
+                        >
                             {(selectedGame === "valorant"
                                 ? user.stats.valorant.recentMatches
                                 : user.stats.lol.recentMatches
                             ).map((match, index) => (
                                 <div
                                     key={index}
-                                    className={`${styles.matchItem} ${
-                                        match.result === "승리"
-                                            ? styles.matchItemWin
-                                            : styles.matchItemLoss
-                                    }`}
+                                    style={{
+                                        padding: "var(--spacing-md)",
+                                        border: "1px solid var(--neutral-200)",
+                                        borderRadius: "var(--radius-md)",
+                                        borderLeft: `4px solid ${
+                                            match.result === "승리"
+                                                ? "#10b981"
+                                                : "#ef4444"
+                                        }`,
+                                    }}
                                 >
-                                    <div className={styles.matchHeader}>
-                                        <span className={styles.matchTitle}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            marginBottom: "var(--spacing-sm)",
+                                        }}
+                                    >
+                                        <span style={{ fontWeight: 600 }}>
                                             {selectedGame === "valorant"
                                                 ? match.map
                                                 : match.champion}
                                         </span>
                                         <span
-                                            className={`${styles.matchResult} ${
-                                                match.result === "승리"
-                                                    ? styles.matchResultWin
-                                                    : styles.matchResultLoss
-                                            }`}
+                                            style={{
+                                                color:
+                                                    match.result === "승리"
+                                                        ? "#10b981"
+                                                        : "#ef4444",
+                                                fontWeight: 600,
+                                            }}
                                         >
                                             {match.result}
                                         </span>
                                     </div>
-                                    <div className={styles.matchDetails}>
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                            fontSize: "14px",
+                                            color: "var(--text-secondary)",
+                                        }}
+                                    >
                                         <span>
                                             {selectedGame === "valorant"
                                                 ? match.agent
@@ -364,7 +684,12 @@ export default function ProfilePage() {
                                         </span>
                                     </div>
                                     {selectedGame === "valorant" && (
-                                        <div className={styles.matchScore}>
+                                        <div
+                                            style={{
+                                                fontSize: "14px",
+                                                color: "var(--text-secondary)",
+                                            }}
+                                        >
                                             스코어: {match.score}
                                         </div>
                                     )}
@@ -376,18 +701,30 @@ export default function ProfilePage() {
 
                 {/* 다른 탭들도 비슷하게 구현 */}
                 {activeTab === "stats" && (
-                    <div className={`card ${styles.placeholderCard}`}>
+                    <div
+                        className="card"
+                        style={{
+                            padding: "var(--spacing-xl)",
+                            textAlign: "center",
+                        }}
+                    >
                         <h3>상세 통계</h3>
-                        <p className={styles.placeholderText}>
+                        <p style={{ color: "var(--text-secondary)" }}>
                             상세 통계 기능은 곧 추가될 예정입니다.
                         </p>
                     </div>
                 )}
 
                 {activeTab === "posts" && (
-                    <div className={`card ${styles.placeholderCard}`}>
+                    <div
+                        className="card"
+                        style={{
+                            padding: "var(--spacing-xl)",
+                            textAlign: "center",
+                        }}
+                    >
                         <h3>내 게시물</h3>
-                        <p className={styles.placeholderText}>
+                        <p style={{ color: "var(--text-secondary)" }}>
                             게시물 관리 기능은 곧 추가될 예정입니다.
                         </p>
                     </div>

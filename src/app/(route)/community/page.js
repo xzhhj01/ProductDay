@@ -5,7 +5,6 @@ import Link from "next/link";
 import { requireAuth } from "@/app/utils/auth-check";
 import { useRouter } from "next/navigation";
 import LoginModal from "@/app/components/LoginModal";
-import styles from "../../styles/community.module.css";
 
 export default function CommunityPage() {
     const router = useRouter();
@@ -227,18 +226,21 @@ export default function CommunityPage() {
         "모르가나",
         "문도 박사",
         "미스 포츈",
+        "밀리오",
         "바드",
         "바루스",
         "바이",
         "베이가",
         "베인",
+        "벡스",
+        "벨베스",
         "벨코즈",
         "볼리베어",
         "브라움",
         "브랜드",
+        "브라이어",
         "블라디미르",
         "블리츠크랭크",
-        "비에고",
         "빅토르",
         "뽀삐",
         "사미라",
@@ -248,12 +250,14 @@ export default function CommunityPage() {
         "세나",
         "세라핀",
         "세주아니",
+        "세트",
         "소나",
         "소라카",
         "쉔",
         "쉬바나",
         "스웨인",
         "스카너",
+        "시비르",
         "신 짜오",
         "신드라",
         "신지드",
@@ -320,6 +324,7 @@ export default function CommunityPage() {
         "코그모",
         "코르키",
         "퀸",
+        "크산테",
         "클레드",
         "키아나",
         "킨드레드",
@@ -341,14 +346,8 @@ export default function CommunityPage() {
         "하이머딩거",
         "헤카림",
         "흐웨이",
-    ];
+    ].sort();
 
-    // Filter posts to show only LoL posts
-    const lolPosts = useMemo(() => {
-        return posts.filter((post) => post.game === "리그 오브 레전드");
-    }, [posts]);
-
-    // LoL specific data
     const lolMaps = ["소환사의 협곡", "칼바람 나락"];
 
     const lolSituations = [
@@ -406,7 +405,10 @@ export default function CommunityPage() {
     };
 
     const filteredPosts = useMemo(() => {
-        return lolPosts.filter((post) => {
+        return posts.filter((post) => {
+            // 롤 게시물만 표시
+            if (post.game !== "리그 오브 레전드") return false;
+
             // 상황 필터
             if (
                 activeFilters.situation.length > 0 &&
@@ -441,7 +443,7 @@ export default function CommunityPage() {
 
             return true;
         });
-    }, [lolPosts, activeFilters]);
+    }, [posts, activeFilters]);
 
     const clearAllFilters = () => {
         setActiveFilters({
