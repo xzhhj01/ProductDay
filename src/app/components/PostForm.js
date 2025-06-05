@@ -49,6 +49,16 @@ export default function PostForm({
         type: "success",
     });
 
+    // 디버깅용 로그 상태
+    const [debugLogs, setDebugLogs] = useState([]);
+
+    // 디버그 로그 추가 함수
+    const addDebugLog = (message) => {
+        const timestamp = new Date().toLocaleTimeString();
+        setDebugLogs((prev) => [...prev, `[${timestamp}] ${message}`]);
+        console.log(`[PostForm Debug] ${message}`);
+    };
+
     // 게임별 태그 데이터
     const tagData = {
         lol: {
@@ -107,8 +117,6 @@ export default function PostForm({
                 "에코",
                 "러시",
                 "로테이션",
-                "플래시 어시스트",
-                "스모크 플레이",
             ],
         },
     };
@@ -135,6 +143,7 @@ export default function PostForm({
             if (initialData.videoAnalysis) {
                 setVideoAnalysis(initialData.videoAnalysis);
             }
+            addDebugLog("초기 데이터 로드 완료");
         }
     }, [mode, initialData]);
 
@@ -144,61 +153,175 @@ export default function PostForm({
             setVideoFile(null);
             setVideoAnalysis(null);
             setAnalysisError("");
+            addDebugLog("비디오 파일 제거됨");
             return;
         }
 
+        addDebugLog(
+            `비디오 파일 선택됨: ${file.name} (${(
+                file.size /
+                1024 /
+                1024
+            ).toFixed(2)}MB)`
+        );
         setVideoFile(file);
         setAnalysisError("");
 
-        // 비디오 분석 시작
-        await analyzeVideo(file);
+        // 파일 크기 체크 (100MB 제한)
+        if (file.size > 100 * 1024 * 1024) {
+            const error = "파일 크기가 100MB를 초과합니다.";
+            setAnalysisError(error);
+            addDebugLog(`오류: ${error}`);
+            return;
+        }
+
+        // 파일 형식 체크
+        const allowedTypes = [
+            "video/mp4",
+            "video/avi",
+            "video/mov",
+            "video/quicktime",
+        ];
+        if (!allowedTypes.includes(file.type)) {
+            const error =
+                "지원하지 않는 파일 형식입니다. MP4, AVI, MOV 파일만 업로드 가능합니다.";
+            setAnalysisError(error);
+            addDebugLog(`오류: ${error}`);
+            return;
+        }
+
+        // 개발 환경에서는 분석 건너뛰기 옵션 제공
+        if (process.env.NODE_ENV === "development") {
+            addDebugLog("개발 환경 - 분석 건너뛰기 가능");
+            setSnackbar({
+                isVisible: true,
+                message: "개발 환경에서는 AI 분석을 건너뛸 수 있습니다.",
+                type: "info",
+            });
+        } else {
+            // 프로덕션에서만 자동 분석
+            await analyzeVideo(file);
+        }
+    };
+
+    // 수동 분석 시작 함수
+    const startManualAnalysis = () => {
+        if (videoFile) {
+            analyzeVideo(videoFile);
+        }
+    };
+
+    // 분석 건너뛰기 함수 (개발용)
+    const skipAnalysis = () => {
+        addDebugLog("분석 건너뛰기 - 더미 데이터 사용");
+        setVideoAnalysis([
+            {
+                time: 30.5,
+                dataUrl:
+                    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k=",
+                gameAnalysis: {
+                    game: "lol",
+                    summary: "개발 환경 더미 분석 결과입니다.",
+                    player: {
+                        champion: "야스오",
+                        positioning: "양호",
+                        currentAction: "라인전",
+                    },
+                    analysis: {
+                        strengths: ["좋은 포지셔닝"],
+                        improvements: ["CS 향상 필요"],
+                        recommendation: "더 적극적인 플레이",
+                    },
+                },
+            },
+        ]);
     };
 
     // 비디오 분석 함수
     const analyzeVideo = async (file) => {
         setIsAnalyzing(true);
         setAnalysisError("");
+        addDebugLog("비디오 분석 시작");
 
         try {
-            // 비디오에서 프레임 캡처
+            // 1단계: 비디오 메타데이터 로드
+            addDebugLog("1단계: 비디오 메타데이터 로드 중...");
             const video = document.createElement("video");
             const url = URL.createObjectURL(file);
             video.src = url;
 
-            await new Promise((resolve) => {
-                video.onloadedmetadata = () => resolve();
+            await new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(() => {
+                    reject(new Error("비디오 로드 타임아웃 (10초)"));
+                }, 10000);
+
+                video.onloadedmetadata = () => {
+                    clearTimeout(timeoutId);
+                    addDebugLog(
+                        `비디오 정보: ${video.duration.toFixed(1)}초, ${
+                            video.videoWidth
+                        }x${video.videoHeight}`
+                    );
+                    resolve();
+                };
+                video.onerror = () => {
+                    clearTimeout(timeoutId);
+                    reject(new Error("비디오 로드 실패"));
+                };
             });
 
-            const frames = await captureFramesFromVideo(video, 10);
+            // 2단계: 프레임 캡처 (최대 5개)
+            addDebugLog("2단계: 프레임 캡처 중...");
+            const frames = await captureFramesFromVideo(video, 5);
+            addDebugLog(`${frames.length}개 프레임 캡처 완료`);
 
-            // 분석 API 호출
-            const response = await fetch("/api/analyze_video", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ frames }),
-            });
+            // 3단계: API 분석 요청
+            addDebugLog("3단계: AI 분석 요청 중...");
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60초 타임아웃
 
-            if (!response.ok) {
-                throw new Error("비디오 분석에 실패했습니다.");
+            try {
+                const response = await fetch("/api/analyze_video", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ frames }),
+                    signal: controller.signal,
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(
+                        errorData.error || `HTTP ${response.status}`
+                    );
+                }
+
+                const data = await response.json();
+                addDebugLog("AI 분석 완료");
+                setVideoAnalysis(data.analyzedFrames);
+            } catch (fetchError) {
+                clearTimeout(timeoutId);
+                if (fetchError.name === "AbortError") {
+                    throw new Error("분석 요청 타임아웃 (60초)");
+                }
+                throw fetchError;
             }
-
-            const data = await response.json();
-            setVideoAnalysis(data.analyzedFrames);
 
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("비디오 분석 오류:", error);
+            addDebugLog(`분석 오류: ${error.message}`);
             setAnalysisError(
-                "비디오 분석 중 오류가 발생했습니다: " + error.message
+                `비디오 분석 중 오류가 발생했습니다: ${error.message}`
             );
         } finally {
             setIsAnalyzing(false);
         }
     };
 
-    // 프레임 캡처 함수
+    // 프레임 캡처 함수 (개선됨)
     const captureFramesFromVideo = async (video, numFrames) => {
         const frames = [];
         const duration = video.duration;
@@ -207,29 +330,37 @@ export default function PostForm({
             throw new Error("비디오 길이를 확인할 수 없습니다.");
         }
 
-        const interval = (duration * 0.9) / (numFrames - 1);
-        const startTime = duration * 0.05;
+        // 비디오가 너무 짧으면 프레임 수 조정
+        const maxFrames = Math.min(numFrames, Math.floor(duration / 2));
+        const interval = (duration * 0.8) / (maxFrames - 1); // 비디오의 80%만 사용
+        const startTime = duration * 0.1; // 10% 지점부터 시작
+
+        addDebugLog(
+            `프레임 캡처 설정: ${maxFrames}개, 간격 ${interval.toFixed(1)}초`
+        );
 
         const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth || 1280;
-        canvas.height = video.videoHeight || 720;
+        canvas.width = Math.min(video.videoWidth || 1280, 640); // 최대 640px로 제한
+        canvas.height = Math.min(video.videoHeight || 720, 360); // 최대 360px로 제한
         const ctx = canvas.getContext("2d");
 
-        for (let i = 0; i < numFrames; i++) {
+        for (let i = 0; i < maxFrames; i++) {
             const time = startTime + interval * i;
+            addDebugLog(
+                `프레임 ${i + 1}/${maxFrames} 캡처 중... (${time.toFixed(1)}초)`
+            );
 
             await new Promise((resolve, reject) => {
-                const timeoutId = setTimeout(
-                    () => reject(new Error("프레임 캡처 타임아웃")),
-                    10000
-                );
+                const timeoutId = setTimeout(() => {
+                    reject(new Error(`프레임 ${i + 1} 캡처 타임아웃`));
+                }, 5000);
 
                 video.currentTime = time;
                 video.onseeked = () => {
                     clearTimeout(timeoutId);
                     try {
                         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                        const dataUrl = canvas.toDataURL("image/jpeg", 0.7); // 품질 70%로 압축
                         frames.push({
                             time: time,
                             dataUrl: dataUrl,
@@ -258,6 +389,7 @@ export default function PostForm({
                 ...prev,
                 [category]: [...prev[category], tag],
             }));
+            addDebugLog(`태그 추가: ${category} - ${tag}`);
         }
     };
 
@@ -267,6 +399,7 @@ export default function PostForm({
             ...prev,
             [category]: prev[category].filter((t) => t !== tag),
         }));
+        addDebugLog(`태그 제거: ${category} - ${tag}`);
     };
 
     // 투표 옵션 업데이트
@@ -308,6 +441,35 @@ export default function PostForm({
     // 폼 제출
     const handleSubmit = (e) => {
         e.preventDefault();
+        addDebugLog("폼 제출 시작");
+
+        // 필수 항목 체크
+        if (!title.trim()) {
+            setSnackbar({
+                isVisible: true,
+                message: "제목을 입력해주세요.",
+                type: "error",
+            });
+            return;
+        }
+
+        if (!content.trim()) {
+            setSnackbar({
+                isVisible: true,
+                message: "본문을 입력해주세요.",
+                type: "error",
+            });
+            return;
+        }
+
+        if (!voteOptions[0].trim() || !voteOptions[1].trim()) {
+            setSnackbar({
+                isVisible: true,
+                message: "투표 옵션을 모두 입력해주세요.",
+                type: "error",
+            });
+            return;
+        }
 
         const formData = {
             title,
@@ -321,8 +483,11 @@ export default function PostForm({
             voteDeadline,
         };
 
+        addDebugLog("폼 데이터 검증 완료");
+
         if (onSubmit) {
             onSubmit(formData);
+            addDebugLog("onSubmit 호출 완료");
         }
 
         // 스낵바 표시
@@ -353,6 +518,34 @@ export default function PostForm({
                     {mode === "create" ? "새 재판 열기" : "재판 수정하기"}
                 </h1>
             </div>
+
+            {/* 개발환경 디버그 패널 */}
+            {process.env.NODE_ENV === "development" && debugLogs.length > 0 && (
+                <div className="mb-6 px-4 sm:px-6 lg:px-8">
+                    <details className="bg-gray-100 rounded-lg p-4">
+                        <summary className="cursor-pointer font-medium text-gray-700">
+                            디버그 로그 ({debugLogs.length})
+                        </summary>
+                        <div className="mt-2 max-h-40 overflow-y-auto">
+                            {debugLogs.map((log, index) => (
+                                <div
+                                    key={index}
+                                    className="text-xs text-gray-600 font-mono"
+                                >
+                                    {log}
+                                </div>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setDebugLogs([])}
+                            className="mt-2 text-xs text-red-600 hover:text-red-700"
+                        >
+                            로그 지우기
+                        </button>
+                    </details>
+                </div>
+            )}
 
             <form
                 onSubmit={handleSubmit}
@@ -469,17 +662,69 @@ export default function PostForm({
                                                 <p className="text-red-700 text-sm">
                                                     {analysisError}
                                                 </p>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        analyzeVideo(videoFile)
-                                                    }
-                                                    className="mt-2 text-blue-600 hover:text-blue-700 text-sm underline"
-                                                >
-                                                    다시 분석하기
-                                                </button>
+                                                <div className="mt-2 space-x-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            analyzeVideo(
+                                                                videoFile
+                                                            )
+                                                        }
+                                                        className="text-blue-600 hover:text-blue-700 text-sm underline"
+                                                        disabled={isAnalyzing}
+                                                    >
+                                                        다시 분석하기
+                                                    </button>
+                                                    {process.env.NODE_ENV ===
+                                                        "development" && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={
+                                                                skipAnalysis
+                                                            }
+                                                            className="text-green-600 hover:text-green-700 text-sm underline"
+                                                        >
+                                                            분석 건너뛰기
+                                                            (개발용)
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
                                         )}
+
+                                        {/* 개발환경 수동 분석 버튼 */}
+                                        {process.env.NODE_ENV ===
+                                            "development" &&
+                                            !videoAnalysis &&
+                                            !isAnalyzing &&
+                                            !analysisError && (
+                                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                                    <p className="text-yellow-700 text-sm mb-2">
+                                                        개발 환경 옵션:
+                                                    </p>
+                                                    <div className="space-x-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={
+                                                                startManualAnalysis
+                                                            }
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm"
+                                                        >
+                                                            AI 분석 시작
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={
+                                                                skipAnalysis
+                                                            }
+                                                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm"
+                                                        >
+                                                            더미 데이터로
+                                                            건너뛰기
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                         <button
                                             type="button"
@@ -487,6 +732,7 @@ export default function PostForm({
                                                 setVideoFile(null);
                                                 setVideoAnalysis(null);
                                                 setAnalysisError("");
+                                                addDebugLog("비디오 파일 제거");
                                             }}
                                             className="text-red-600 hover:text-red-700 text-sm"
                                         >
@@ -580,7 +826,6 @@ export default function PostForm({
                     <h2 className="text-lg font-semibold text-gray-900 mb-6">
                         태그 선택
                     </h2>
-
                     <div className="space-y-6">
                         {gameType === "lol" ? (
                             <>
@@ -590,8 +835,6 @@ export default function PostForm({
                                         <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                                         챔피언
                                     </h3>
-
-                                    {/* 선택된 챔피언 태그 표시 */}
                                     {selectedTags.champions.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mb-3">
                                             {selectedTags.champions.map(
@@ -618,7 +861,6 @@ export default function PostForm({
                                             )}
                                         </div>
                                     )}
-
                                     <div className="mb-3">
                                         <input
                                             type="text"
@@ -751,8 +993,6 @@ export default function PostForm({
                                         <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                                         에이전트
                                     </h3>
-
-                                    {/* 선택된 에이전트 태그 표시 */}
                                     {selectedTags.agents.length > 0 && (
                                         <div className="flex flex-wrap gap-2 mb-3">
                                             {selectedTags.agents.map((tag) => (
@@ -774,7 +1014,6 @@ export default function PostForm({
                                             ))}
                                         </div>
                                     )}
-
                                     <div className="mb-3">
                                         <input
                                             type="text"
@@ -905,12 +1144,10 @@ export default function PostForm({
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">
                         투표 설정 <span className="text-red-500">*</span>
                     </h2>
-
                     <div className="mb-6">
                         <h3 className="text-sm font-medium text-gray-700 mb-4">
                             투표 옵션
                         </h3>
-
                         <div className="bg-gray-50 rounded-lg p-6">
                             <div className="flex flex-wrap items-center justify-center gap-4">
                                 {/* 옵션 1 */}
@@ -999,7 +1236,6 @@ export default function PostForm({
                                 </div>
                             </div>
                         </div>
-
                         {validationErrors.voteOptions && mode !== "edit" && (
                             <p className="text-red-500 text-sm mt-2">
                                 {validationErrors.voteOptions}
