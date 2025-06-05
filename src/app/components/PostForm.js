@@ -19,6 +19,9 @@ export default function PostForm({
 }) {
     const [title, setTitle] = useState("");
     const [videoFile, setVideoFile] = useState(null);
+    const [videoAnalysis, setVideoAnalysis] = useState(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisError, setAnalysisError] = useState("");
     const [selectedTags, setSelectedTags] = useState({
         champions: [],
         lanes: [],
@@ -110,28 +113,6 @@ export default function PostForm({
         },
     };
 
-    // 발로란트 에이전트 역할군
-    const agentRoles = {
-        제트: "듀얼리스트",
-        레이나: "듀얼리스트",
-        피닉스: "듀얼리스트",
-        레이즈: "듀얼리스트",
-        요루: "듀얼리스트",
-        네온: "듀얼리스트",
-        세이지: "센티넬",
-        킬조이: "센티넬",
-        사이퍼: "센티넬",
-        챔버: "센티넬",
-        소바: "이니시에이터",
-        브리치: "이니시에이터",
-        스카이: "이니시에이터",
-        케이오: "이니시에이터",
-        오멘: "컨트롤러",
-        브림스톤: "컨트롤러",
-        바이퍼: "컨트롤러",
-        아스트라: "컨트롤러",
-    };
-
     const [tagSearch, setTagSearch] = useState("");
 
     // 수정 모드일 때 초기 데이터 설정
@@ -151,8 +132,118 @@ export default function PostForm({
             setVoteOptions(initialData.voteOptions || ["", ""]);
             setAllowNeutral(initialData.allowNeutral || false);
             setVoteDeadline(initialData.voteDeadline || "");
+            if (initialData.videoAnalysis) {
+                setVideoAnalysis(initialData.videoAnalysis);
+            }
         }
     }, [mode, initialData]);
+
+    // 비디오 파일 선택 및 분석
+    const handleVideoSelect = async (file) => {
+        if (!file) {
+            setVideoFile(null);
+            setVideoAnalysis(null);
+            setAnalysisError("");
+            return;
+        }
+
+        setVideoFile(file);
+        setAnalysisError("");
+
+        // 비디오 분석 시작
+        await analyzeVideo(file);
+    };
+
+    // 비디오 분석 함수
+    const analyzeVideo = async (file) => {
+        setIsAnalyzing(true);
+        setAnalysisError("");
+
+        try {
+            // 비디오에서 프레임 캡처
+            const video = document.createElement("video");
+            const url = URL.createObjectURL(file);
+            video.src = url;
+
+            await new Promise((resolve) => {
+                video.onloadedmetadata = () => resolve();
+            });
+
+            const frames = await captureFramesFromVideo(video, 10);
+
+            // 분석 API 호출
+            const response = await fetch("/api/analyze_video", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ frames }),
+            });
+
+            if (!response.ok) {
+                throw new Error("비디오 분석에 실패했습니다.");
+            }
+
+            const data = await response.json();
+            setVideoAnalysis(data.analyzedFrames);
+
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("비디오 분석 오류:", error);
+            setAnalysisError(
+                "비디오 분석 중 오류가 발생했습니다: " + error.message
+            );
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+    // 프레임 캡처 함수
+    const captureFramesFromVideo = async (video, numFrames) => {
+        const frames = [];
+        const duration = video.duration;
+
+        if (isNaN(duration) || duration <= 0) {
+            throw new Error("비디오 길이를 확인할 수 없습니다.");
+        }
+
+        const interval = (duration * 0.9) / (numFrames - 1);
+        const startTime = duration * 0.05;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || 1280;
+        canvas.height = video.videoHeight || 720;
+        const ctx = canvas.getContext("2d");
+
+        for (let i = 0; i < numFrames; i++) {
+            const time = startTime + interval * i;
+
+            await new Promise((resolve, reject) => {
+                const timeoutId = setTimeout(
+                    () => reject(new Error("프레임 캡처 타임아웃")),
+                    10000
+                );
+
+                video.currentTime = time;
+                video.onseeked = () => {
+                    clearTimeout(timeoutId);
+                    try {
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                        frames.push({
+                            time: time,
+                            dataUrl: dataUrl,
+                        });
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+            });
+        }
+
+        return frames;
+    };
 
     // textarea 자동 높이 조절
     const handleTextareaResize = (e) => {
@@ -221,6 +312,7 @@ export default function PostForm({
         const formData = {
             title,
             videoFile,
+            videoAnalysis,
             selectedTags,
             content,
             voteType,
@@ -298,12 +390,113 @@ export default function PostForm({
                             </p>
                         </div>
                     ) : (
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            {videoFile ? (
-                                <div className="space-y-4">
-                                    <div className="text-green-600">
+                        <div className="space-y-4">
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                {videoFile ? (
+                                    <div className="space-y-4">
+                                        <div className="text-green-600">
+                                            <svg
+                                                className="w-12 h-12 mx-auto mb-2"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                            <p className="font-medium">
+                                                {videoFile.name}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                                {(
+                                                    videoFile.size /
+                                                    1024 /
+                                                    1024
+                                                ).toFixed(2)}{" "}
+                                                MB
+                                            </p>
+                                        </div>
+
+                                        {/* 분석 상태 표시 */}
+                                        {isAnalyzing && (
+                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                                <div className="flex items-center justify-center space-x-2">
+                                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                                                    <span className="text-blue-700 text-sm">
+                                                        비디오 AI 분석 중...
+                                                    </span>
+                                                </div>
+                                                <p className="text-blue-600 text-xs mt-2 text-center">
+                                                    프레임을 캡처하고 게임
+                                                    상황을 분석하고 있습니다
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* 분석 완료 */}
+                                        {videoAnalysis && !isAnalyzing && (
+                                            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                                <div className="flex items-center justify-center space-x-2">
+                                                    <svg
+                                                        className="w-5 h-5 text-green-500"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M5 13l4 4L19 7"
+                                                        />
+                                                    </svg>
+                                                    <span className="text-green-700 text-sm">
+                                                        AI 분석 완료!{" "}
+                                                        {videoAnalysis.length}개
+                                                        프레임 분석됨
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* 분석 오류 */}
+                                        {analysisError && (
+                                            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                                <p className="text-red-700 text-sm">
+                                                    {analysisError}
+                                                </p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        analyzeVideo(videoFile)
+                                                    }
+                                                    className="mt-2 text-blue-600 hover:text-blue-700 text-sm underline"
+                                                >
+                                                    다시 분석하기
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setVideoFile(null);
+                                                setVideoAnalysis(null);
+                                                setAnalysisError("");
+                                            }}
+                                            className="text-red-600 hover:text-red-700 text-sm"
+                                        >
+                                            파일 제거
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div>
                                         <svg
-                                            className="w-12 h-12 mx-auto mb-2"
+                                            className="w-12 h-12 text-gray-400 mx-auto mb-4"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -312,62 +505,70 @@ export default function PostForm({
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth={2}
-                                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 002 2v8a2 2 0 002 2z"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                                             />
                                         </svg>
-                                        <p className="font-medium">
-                                            {videoFile.name}
+                                        <p className="text-sm text-gray-500 mb-4">
+                                            MP4, AVI, MOV 파일 지원 (최대 100MB)
+                                            <br />
+                                            <span className="font-medium text-blue-600">
+                                                업로드 시 자동으로 AI 분석이
+                                                시작됩니다
+                                            </span>
                                         </p>
-                                        <p className="text-sm text-gray-500">
-                                            {(
-                                                videoFile.size /
-                                                1024 /
-                                                1024
-                                            ).toFixed(2)}{" "}
-                                            MB
-                                        </p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setVideoFile(null)}
-                                        className="text-red-600 hover:text-red-700 text-sm"
-                                    >
-                                        파일 제거
-                                    </button>
-                                </div>
-                            ) : (
-                                <div>
-                                    <svg
-                                        className="w-12 h-12 text-gray-400 mx-auto mb-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                        <input
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={(e) =>
+                                                handleVideoSelect(
+                                                    e.target.files[0]
+                                                )
+                                            }
+                                            className="hidden"
+                                            id="video-upload"
                                         />
-                                    </svg>
-                                    <p className="text-sm text-gray-500 mb-4">
-                                        MP4, AVI, MOV 파일 지원 (최대 100MB)
+                                        <label
+                                            htmlFor="video-upload"
+                                            className={`bg-${gameColor}-500 hover:bg-${gameColor}-600 text-white px-6 py-2 rounded-lg cursor-pointer transition-colors`}
+                                        >
+                                            파일 선택
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* 분석 결과 미리보기 */}
+                            {videoAnalysis && videoAnalysis.length > 0 && (
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <h3 className="font-medium text-gray-900 mb-3">
+                                        AI 분석 결과 미리보기
+                                    </h3>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {videoAnalysis
+                                            .slice(0, 3)
+                                            .map((frame, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="relative"
+                                                >
+                                                    <img
+                                                        src={frame.dataUrl}
+                                                        alt={`프레임 ${
+                                                            index + 1
+                                                        }`}
+                                                        className="w-full h-20 object-cover rounded"
+                                                    />
+                                                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b">
+                                                        {frame.gameAnalysis
+                                                            ?.game || "분석중"}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                    </div>
+                                    <p className="text-sm text-gray-500 mt-2">
+                                        게시글 작성 완료 후 전체 AI 분석 결과를
+                                        확인할 수 있습니다
                                     </p>
-                                    <input
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={(e) =>
-                                            setVideoFile(e.target.files[0])
-                                        }
-                                        className="hidden"
-                                        id="video-upload"
-                                    />
-                                    <label
-                                        htmlFor="video-upload"
-                                        className={`bg-${gameColor}-500 hover:bg-${gameColor}-600 text-white px-6 py-2 rounded-lg cursor-pointer transition-colors`}
-                                    >
-                                        파일 선택
-                                    </label>
                                 </div>
                             )}
                         </div>
@@ -621,18 +822,7 @@ export default function PostForm({
                                                                     : "bg-white text-gray-700 border-gray-300 hover:border-red-400"
                                                             }`}
                                                         >
-                                                            <div>{tag}</div>
-                                                            {agentRoles[
-                                                                tag
-                                                            ] && (
-                                                                <div className="text-xs text-gray-500 mt-0.5">
-                                                                    {
-                                                                        agentRoles[
-                                                                            tag
-                                                                        ]
-                                                                    }
-                                                                </div>
-                                                            )}
+                                                            {tag}
                                                         </button>
                                                     ))}
                                             </div>
@@ -865,9 +1055,14 @@ export default function PostForm({
                     </Link>
                     <button
                         type="submit"
-                        className={`px-8 py-3 bg-${gameColor}-500 hover:bg-${gameColor}-600 text-white rounded-lg font-medium transition-colors`}
+                        disabled={isAnalyzing}
+                        className={`px-8 py-3 bg-${gameColor}-500 hover:bg-${gameColor}-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors`}
                     >
-                        {mode === "create" ? "재판 열기" : "수정 완료"}
+                        {isAnalyzing
+                            ? "분석 중..."
+                            : mode === "create"
+                            ? "재판 열기"
+                            : "수정 완료"}
                     </button>
                 </div>
             </form>

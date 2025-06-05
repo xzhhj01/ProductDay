@@ -8,6 +8,7 @@ import {
     getCharacterCountDisplay,
     VALIDATION_LIMITS,
 } from "@/app/utils/validation";
+import ComprehensiveAnalysis from "@/app/components/ComprehensiveAnalysis";
 
 export default function ValorantCommunityPostPage() {
     const params = useParams();
@@ -41,6 +42,7 @@ export default function ValorantCommunityPostPage() {
         totalVotes: 86,
         views: 203,
         comments: 15,
+        videoAnalysis: null,
     });
 
     // 댓글 데이터
@@ -310,7 +312,14 @@ export default function ValorantCommunityPostPage() {
                         </div>
                     </section>
                 )}
-
+                {post.videoAnalysis && post.videoAnalysis.length > 0 && (
+                    <section className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                            🤖 AI 분석 결과
+                        </h2>
+                        <ComprehensiveAnalysis frames={post.videoAnalysis} />
+                    </section>
+                )}
                 {/* 본문 */}
                 <section className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">
