@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import CommunityHeader from "@/app/components/CommunityHeader";
 import {
@@ -12,70 +12,107 @@ import ComprehensiveAnalysis from "@/app/components/ComprehensiveAnalysis";
 
 export default function LoLCommunityPostPage() {
     const params = useParams();
-    const postId = params.id;
+    const router = useRouter();
+    const postId = parseInt(params.id);
 
-    // 더미 포스트 데이터 (실제로는 API에서 가져올 데이터)
-    const [post, setPost] = useState({
-        id: 1,
-        title: "야스오 vs 제드 라인전 상황 판단 부탁드립니다",
-        author: {
-            nickname: "소환사123",
-            tier: "Gold",
-        },
-        createdAt: "2024-01-15T10:30:00Z",
-        videoUrl: null, // 실제로는 동영상 URL
-        tags: {
-            champions: ["야스오", "제드"],
-            lanes: ["미드"],
-            situations: ["라인전"],
-        },
-        content:
-            "미드 라인에서 야스오로 제드와 라인전을 하던 중 애매한 상황이 발생했습니다. 제드가 그림자를 사용해서 딜교환을 시도했는데, 제가 바람 장막을 사용한 타이밍이 맞았는지 궁금합니다. 그리고 이후 추가 딜교환을 시도한 것이 올바른 판단이었는지도 의견 부탁드립니다.",
-        voteOptions: ["야스오가 잘했다", "제드가 잘했다"],
-        allowNeutral: true,
-        voteDeadline: "2024-01-22T10:30:00Z",
-        votes: {
-            option1: 45,
-            option2: 32,
-            neutral: 8,
-        },
-        totalVotes: 85,
-        views: 156,
-        comments: 12,
-        videoAnalysis: null,
-    });
+    const [post, setPost] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // 댓글 데이터
-    const [comments, setComments] = useState([
-        {
-            id: 1,
-            author: "프로게이머지망생",
-            content:
-                "야스오 바람 장막 타이밍이 정말 좋았네요! 제드 Q를 완벽하게 막았습니다.",
-            createdAt: "2024-01-15T11:00:00Z",
-            likes: 5,
-        },
-        {
-            id: 2,
-            author: "미드라이너",
-            content:
-                "개인적으로는 제드가 더 좋은 플레이를 했다고 생각해요. 그림자 위치선정이 완벽했습니다.",
-            createdAt: "2024-01-15T11:15:00Z",
-            likes: 3,
-        },
-    ]);
-
+    const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [selectedVote, setSelectedVote] = useState(null);
     const [hasVoted, setHasVoted] = useState(false);
 
+    // 게시글 로드
+    useEffect(() => {
+        const loadPost = () => {
+            try {
+                // localStorage에서 게시글 불러오기
+                const savedPosts = localStorage.getItem("judgegg_posts");
+                if (!savedPosts) {
+                    setError("게시글을 찾을 수 없습니다.");
+                    setLoading(false);
+                    return;
+                }
+
+                const allPosts = JSON.parse(savedPosts);
+                const foundPost = allPosts.find(
+                    (p) => p.id === postId && p.gameType === "lol"
+                );
+
+                if (!foundPost) {
+                    setError("게시글을 찾을 수 없습니다.");
+                    setLoading(false);
+                    return;
+                }
+
+                // 게시글 조회수 증가
+                foundPost.views = (foundPost.views || 0) + 1;
+
+                // 업데이트된 게시글 목록을 다시 저장
+                const updatedPosts = allPosts.map((p) =>
+                    p.id === postId ? foundPost : p
+                );
+                localStorage.setItem(
+                    "judgegg_posts",
+                    JSON.stringify(updatedPosts)
+                );
+
+                setPost(foundPost);
+
+                // 댓글 데이터 설정 (실제로는 API에서 가져올 데이터)
+                setComments([
+                    {
+                        id: 1,
+                        author: "프로게이머지망생",
+                        content:
+                            "정말 좋은 분석이네요! 많은 도움이 되었습니다.",
+                        createdAt: new Date(
+                            Date.now() - 1000 * 60 * 30
+                        ).toISOString(),
+                        likes: 5,
+                    },
+                    {
+                        id: 2,
+                        author: "미드라이너",
+                        content:
+                            "저도 비슷한 상황을 겪었는데 이런 판단이 맞는 것 같아요.",
+                        createdAt: new Date(
+                            Date.now() - 1000 * 60 * 15
+                        ).toISOString(),
+                        likes: 3,
+                    },
+                ]);
+            } catch (error) {
+                console.error("게시글 로드 실패:", error);
+                setError("게시글을 불러오는 중 오류가 발생했습니다.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (postId) {
+            loadPost();
+        }
+    }, [postId]);
+
     // 투표 처리
     const handleVote = (option) => {
         if (hasVoted) return;
+
         setSelectedVote(option);
         setHasVoted(true);
-        // 실제로는 API 호출
+
+        // 실제로는 API 호출하여 투표 결과 업데이트
         console.log("투표:", option);
+
+        // 로컬 상태에서 투표 수 증가 (데모용)
+        setPost((prev) => ({
+            ...prev,
+            votes: (prev.votes || 0) + 1,
+        }));
     };
 
     // 댓글 입력 처리
@@ -114,17 +151,6 @@ export default function LoLCommunityPostPage() {
         );
     };
 
-    const formatTimeAgo = (timestamp) => {
-        const now = new Date();
-        const postTime = new Date(timestamp);
-        const diffInMinutes = Math.floor((now - postTime) / (1000 * 60));
-
-        if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
-        if (diffInMinutes < 1440)
-            return `${Math.floor(diffInMinutes / 60)}시간 전`;
-        return `${Math.floor(diffInMinutes / 1440)}일 전`;
-    };
-
     const getTierColor = (tier) => {
         const tierColors = {
             Iron: "text-gray-600",
@@ -139,6 +165,55 @@ export default function LoLCommunityPostPage() {
         };
         return tierColors[tier] || "text-gray-600";
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <CommunityHeader
+                    gameType="lol"
+                    title="리그 오브 레전드 법원"
+                    description="소환사의 협곡에서 발생한 분쟁을 공정하게 심판합니다"
+                />
+                <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">
+                            게시글을 불러오는 중...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !post) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <CommunityHeader
+                    gameType="lol"
+                    title="리그 오브 레전드 법원"
+                    description="소환사의 협곡에서 발생한 분쟁을 공정하게 심판합니다"
+                />
+                <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <div className="text-red-500 text-6xl mb-4">❌</div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            {error || "게시글을 찾을 수 없습니다"}
+                        </h3>
+                        <p className="text-gray-600 mb-6">
+                            요청하신 게시글이 존재하지 않거나 삭제되었습니다.
+                        </p>
+                        <Link
+                            href="/lol/community"
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                        >
+                            목록으로 돌아가기
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -169,10 +244,9 @@ export default function LoLCommunityPostPage() {
                         </div>
                     </div>
 
-                    {/* PostCard와 동일한 형태의 사용자 정보 */}
+                    {/* 사용자 정보 */}
                     <div className="flex justify-between items-center text-sm text-gray-500">
                         <div className="flex items-center space-x-3">
-                            {/* 유저 정보 */}
                             <div className="flex items-center space-x-1">
                                 <span className="font-medium text-gray-700">
                                     {post.author.nickname}
@@ -185,12 +259,9 @@ export default function LoLCommunityPostPage() {
                                     {post.author.tier}
                                 </span>
                             </div>
-
-                            {/* 작성시간 */}
                             <span>{formatDate(post.createdAt)}</span>
                         </div>
 
-                        {/* 통계 정보들 */}
                         <div className="flex items-center space-x-3">
                             {/* 조회수 */}
                             <div className="flex items-center space-x-1">
@@ -213,7 +284,7 @@ export default function LoLCommunityPostPage() {
                                         d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                                     />
                                 </svg>
-                                <span>{post.views}</span>
+                                <span>{post.views || 0}</span>
                             </div>
 
                             {/* 댓글 수 */}
@@ -231,7 +302,7 @@ export default function LoLCommunityPostPage() {
                                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                                     />
                                 </svg>
-                                <span>{post.comments}</span>
+                                <span>{comments.length}</span>
                             </div>
 
                             {/* 추천수 */}
@@ -248,7 +319,7 @@ export default function LoLCommunityPostPage() {
                                     />
                                 </svg>
                                 <span className="text-sm font-medium text-blue-700">
-                                    {post.totalVotes}
+                                    {post.votes || 0}
                                 </span>
                             </div>
                         </div>
@@ -258,7 +329,7 @@ export default function LoLCommunityPostPage() {
                 {/* 태그 */}
                 <div className="flex flex-wrap gap-2 mb-8">
                     {/* 챔피언 태그 */}
-                    {post.tags.champions.map((tag) => (
+                    {post.selectedTags?.champions?.map((tag) => (
                         <span
                             key={tag}
                             className="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full"
@@ -267,7 +338,7 @@ export default function LoLCommunityPostPage() {
                         </span>
                     ))}
                     {/* 라인 태그 */}
-                    {post.tags.lanes.map((tag) => (
+                    {post.selectedTags?.lanes?.map((tag) => (
                         <span
                             key={tag}
                             className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full"
@@ -276,7 +347,7 @@ export default function LoLCommunityPostPage() {
                         </span>
                     ))}
                     {/* 상황별 태그 */}
-                    {post.tags.situations.map((tag) => (
+                    {post.selectedTags?.situations?.map((tag) => (
                         <span
                             key={tag}
                             className="px-3 py-1 bg-purple-100 text-purple-700 text-sm rounded-full"
@@ -284,10 +355,22 @@ export default function LoLCommunityPostPage() {
                             {tag}
                         </span>
                     ))}
+                    {/* 기본 태그 (하위 호환성) */}
+                    {post.tags &&
+                        post.tags.length > 0 &&
+                        !post.selectedTags &&
+                        post.tags.map((tag) => (
+                            <span
+                                key={tag}
+                                className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                            >
+                                {tag}
+                            </span>
+                        ))}
                 </div>
 
-                {/* 동영상 영역 - videoUrl이 있을 때만 표시 */}
-                {post.videoUrl && (
+                {/* 동영상 영역 */}
+                {post.videoFile && (
                     <section className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
                             동영상
@@ -307,11 +390,13 @@ export default function LoLCommunityPostPage() {
                                 />
                             </svg>
                             <p className="text-gray-500">
-                                동영상이 업로드되지 않았습니다
+                                동영상: {post.videoFile}
                             </p>
                         </div>
                     </section>
                 )}
+
+                {/* AI 분석 결과 */}
                 {post.videoAnalysis && post.videoAnalysis.length > 0 && (
                     <section className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
                         <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -320,6 +405,7 @@ export default function LoLCommunityPostPage() {
                         <ComprehensiveAnalysis frames={post.videoAnalysis} />
                     </section>
                 )}
+
                 {/* 본문 */}
                 <section className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -346,7 +432,8 @@ export default function LoLCommunityPostPage() {
                                         className="flex-1 min-w-[200px] max-w-xs bg-gray-100 border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors"
                                     >
                                         <div className="text-gray-700 font-medium text-lg break-words">
-                                            {post.voteOptions[0]}
+                                            {post.voteOptions?.[0] ||
+                                                "첫 번째 선택지"}
                                         </div>
                                     </button>
 
@@ -360,7 +447,7 @@ export default function LoLCommunityPostPage() {
                                                 className="w-16 h-16 rounded-full flex items-center justify-center bg-gray-500 hover:bg-gray-600 transition-colors cursor-pointer"
                                             >
                                                 <span className="text-white font-bold text-xs">
-                                                    중립기어
+                                                    중립
                                                 </span>
                                             </button>
                                         ) : (
@@ -378,7 +465,8 @@ export default function LoLCommunityPostPage() {
                                         className="flex-1 min-w-[200px] max-w-xs bg-gray-100 border-2 border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors"
                                     >
                                         <div className="text-gray-700 font-medium text-lg break-words">
-                                            {post.voteOptions[1]}
+                                            {post.voteOptions?.[1] ||
+                                                "두 번째 선택지"}
                                         </div>
                                     </button>
                                 </div>
@@ -389,87 +477,9 @@ export default function LoLCommunityPostPage() {
                             <div className="text-center text-green-600 font-medium mb-4">
                                 투표가 완료되었습니다!
                             </div>
-
-                            {/* 투표 결과 */}
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">
-                                        {post.voteOptions[0]}
-                                    </span>
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-32 bg-gray-200 rounded-full h-2">
-                                            <div
-                                                className="bg-blue-500 h-2 rounded-full"
-                                                style={{
-                                                    width: `${
-                                                        (post.votes.option1 /
-                                                            post.totalVotes) *
-                                                        100
-                                                    }%`,
-                                                }}
-                                            ></div>
-                                        </div>
-                                        <span className="text-sm text-gray-600">
-                                            {post.votes.option1}표
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between">
-                                    <span className="text-gray-700">
-                                        {post.voteOptions[1]}
-                                    </span>
-                                    <div className="flex items-center space-x-2">
-                                        <div className="w-32 bg-gray-200 rounded-full h-2">
-                                            <div
-                                                className="bg-red-500 h-2 rounded-full"
-                                                style={{
-                                                    width: `${
-                                                        (post.votes.option2 /
-                                                            post.totalVotes) *
-                                                        100
-                                                    }%`,
-                                                }}
-                                            ></div>
-                                        </div>
-                                        <span className="text-sm text-gray-600">
-                                            {post.votes.option2}표
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {post.allowNeutral && (
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-700">
-                                            판단하기 어려움
-                                        </span>
-                                        <div className="flex items-center space-x-2">
-                                            <div className="w-32 bg-gray-200 rounded-full h-2">
-                                                <div
-                                                    className="bg-gray-500 h-2 rounded-full"
-                                                    style={{
-                                                        width: `${
-                                                            (post.votes
-                                                                .neutral /
-                                                                post.totalVotes) *
-                                                            100
-                                                        }%`,
-                                                    }}
-                                                ></div>
-                                            </div>
-                                            <span className="text-sm text-gray-600">
-                                                {post.votes.neutral}표
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
                             <div className="text-center text-sm text-gray-500 mt-4">
-                                총 {post.totalVotes}명이 투표했습니다
+                                투표 결과는 향후 업데이트될 예정입니다.
                             </div>
-
-                            {/* 투표 변경 버튼 */}
                             <div className="text-center mt-4">
                                 <button
                                     onClick={() => {
